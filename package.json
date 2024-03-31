@@ -1,0 +1,23 @@
+{
+  "name": "fitnesscenter",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node backend/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DanKo-code/FitnessCenter_FullStack.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DanKo-code/FitnessCenter_FullStack/issues"
+  },
+  "homepage": "https://github.com/DanKo-code/FitnessCenter_FullStack#readme",
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
