@@ -1,0 +1,328 @@
+USE [master]
+GO
+/****** Object:  Database [FitessCenter]    Script Date: 18.05.2023 15:35:53 ******/
+CREATE DATABASE [FitessCenter]
+ CONTAINMENT = NONE
+ ON  PRIMARY 
+( NAME = N'FitessCenter', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL16.MSSQLSERVER\MSSQL\DATA\FitessCenter.mdf' , SIZE = 73728KB , MAXSIZE = UNLIMITED, FILEGROWTH = 65536KB )
+ LOG ON 
+( NAME = N'FitessCenter_log', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL16.MSSQLSERVER\MSSQL\DATA\FitessCenter_log.ldf' , SIZE = 8192KB , MAXSIZE = 2048GB , FILEGROWTH = 65536KB )
+ WITH CATALOG_COLLATION = DATABASE_DEFAULT, LEDGER = OFF
+GO
+ALTER DATABASE [FitessCenter] SET COMPATIBILITY_LEVEL = 160
+GO
+IF (1 = FULLTEXTSERVICEPROPERTY('IsFullTextInstalled'))
+begin
+EXEC [FitessCenter].[dbo].[sp_fulltext_database] @action = 'enable'
+end
+GO
+ALTER DATABASE [FitessCenter] SET ANSI_NULL_DEFAULT OFF 
+GO
+ALTER DATABASE [FitessCenter] SET ANSI_NULLS OFF 
+GO
+ALTER DATABASE [FitessCenter] SET ANSI_PADDING OFF 
+GO
+ALTER DATABASE [FitessCenter] SET ANSI_WARNINGS OFF 
+GO
+ALTER DATABASE [FitessCenter] SET ARITHABORT OFF 
+GO
+ALTER DATABASE [FitessCenter] SET AUTO_CLOSE OFF 
+GO
+ALTER DATABASE [FitessCenter] SET AUTO_SHRINK OFF 
+GO
+ALTER DATABASE [FitessCenter] SET AUTO_UPDATE_STATISTICS ON 
+GO
+ALTER DATABASE [FitessCenter] SET CURSOR_CLOSE_ON_COMMIT OFF 
+GO
+ALTER DATABASE [FitessCenter] SET CURSOR_DEFAULT  GLOBAL 
+GO
+ALTER DATABASE [FitessCenter] SET CONCAT_NULL_YIELDS_NULL OFF 
+GO
+ALTER DATABASE [FitessCenter] SET NUMERIC_ROUNDABORT OFF 
+GO
+ALTER DATABASE [FitessCenter] SET QUOTED_IDENTIFIER OFF 
+GO
+ALTER DATABASE [FitessCenter] SET RECURSIVE_TRIGGERS OFF 
+GO
+ALTER DATABASE [FitessCenter] SET  ENABLE_BROKER 
+GO
+ALTER DATABASE [FitessCenter] SET AUTO_UPDATE_STATISTICS_ASYNC OFF 
+GO
+ALTER DATABASE [FitessCenter] SET DATE_CORRELATION_OPTIMIZATION OFF 
+GO
+ALTER DATABASE [FitessCenter] SET TRUSTWORTHY OFF 
+GO
+ALTER DATABASE [FitessCenter] SET ALLOW_SNAPSHOT_ISOLATION OFF 
+GO
+ALTER DATABASE [FitessCenter] SET PARAMETERIZATION SIMPLE 
+GO
+ALTER DATABASE [FitessCenter] SET READ_COMMITTED_SNAPSHOT ON 
+GO
+ALTER DATABASE [FitessCenter] SET HONOR_BROKER_PRIORITY OFF 
+GO
+ALTER DATABASE [FitessCenter] SET RECOVERY FULL 
+GO
+ALTER DATABASE [FitessCenter] SET  MULTI_USER 
+GO
+ALTER DATABASE [FitessCenter] SET PAGE_VERIFY CHECKSUM  
+GO
+ALTER DATABASE [FitessCenter] SET DB_CHAINING OFF 
+GO
+ALTER DATABASE [FitessCenter] SET FILESTREAM( NON_TRANSACTED_ACCESS = OFF ) 
+GO
+ALTER DATABASE [FitessCenter] SET TARGET_RECOVERY_TIME = 60 SECONDS 
+GO
+ALTER DATABASE [FitessCenter] SET DELAYED_DURABILITY = DISABLED 
+GO
+ALTER DATABASE [FitessCenter] SET ACCELERATED_DATABASE_RECOVERY = OFF  
+GO
+EXEC sys.sp_db_vardecimal_storage_format N'FitessCenter', N'ON'
+GO
+ALTER DATABASE [FitessCenter] SET QUERY_STORE = ON
+GO
+ALTER DATABASE [FitessCenter] SET QUERY_STORE (OPERATION_MODE = READ_WRITE, CLEANUP_POLICY = (STALE_QUERY_THRESHOLD_DAYS = 30), DATA_FLUSH_INTERVAL_SECONDS = 900, INTERVAL_LENGTH_MINUTES = 60, MAX_STORAGE_SIZE_MB = 1000, QUERY_CAPTURE_MODE = AUTO, SIZE_BASED_CLEANUP_MODE = AUTO, MAX_PLANS_PER_QUERY = 200, WAIT_STATS_CAPTURE_MODE = ON)
+GO
+USE [FitessCenter]
+GO
+/****** Object:  Table [dbo].[__EFMigrationsHistory]    Script Date: 18.05.2023 15:35:53 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[__EFMigrationsHistory](
+	[MigrationId] [nvarchar](150) NOT NULL,
+	[ProductVersion] [nvarchar](32) NOT NULL,
+ CONSTRAINT [PK___EFMigrationsHistory] PRIMARY KEY CLUSTERED 
+(
+	[MigrationId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Abonements]    Script Date: 18.05.2023 15:35:53 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Abonements](
+	[Id] [uniqueidentifier] NOT NULL,
+	[Title] [nvarchar](max) NULL,
+	[Age] [int] NULL,
+	[Validity] [nvarchar](max) NULL,
+	[VisitingTime] [nvarchar](max) NULL,
+	[Amount] [int] NULL,
+	[Photo] [nvarchar](max) NULL,
+	[Price] [int] NULL,
+ CONSTRAINT [PK_Abonements] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[AbonementsServices]    Script Date: 18.05.2023 15:35:53 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[AbonementsServices](
+	[AbonementsId] [uniqueidentifier] NOT NULL,
+	[ServicesId] [uniqueidentifier] NOT NULL,
+ CONSTRAINT [PK_AbonementsServices] PRIMARY KEY CLUSTERED 
+(
+	[AbonementsId] ASC,
+	[ServicesId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Clients]    Script Date: 18.05.2023 15:35:53 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Clients](
+	[Id] [uniqueidentifier] NOT NULL,
+	[Name] [nvarchar](max) NOT NULL,
+	[SurName] [nvarchar](max) NOT NULL,
+	[Login] [nvarchar](max) NOT NULL,
+	[Email] [nvarchar](max) NOT NULL,
+	[Phone] [nvarchar](max) NOT NULL,
+	[Role] [int] NOT NULL,
+	[Password] [nvarchar](max) NOT NULL,
+	[Photo] [nvarchar](max) NULL,
+ CONSTRAINT [PK_Clients] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Comments]    Script Date: 18.05.2023 15:35:53 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Comments](
+	[Id] [uniqueidentifier] NOT NULL,
+	[CommentBody] [nvarchar](max) NOT NULL,
+	[ClientsId] [uniqueidentifier] NOT NULL,
+	[CouchesId] [uniqueidentifier] NOT NULL,
+ CONSTRAINT [PK_Comments] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Couches]    Script Date: 18.05.2023 15:35:53 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Couches](
+	[Id] [uniqueidentifier] NOT NULL,
+	[Name] [nvarchar](max) NOT NULL,
+	[Description] [nvarchar](max) NOT NULL,
+	[Photo] [nvarchar](max) NOT NULL,
+ CONSTRAINT [PK_Couches] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[CouchesServices]    Script Date: 18.05.2023 15:35:53 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[CouchesServices](
+	[CouchesId] [uniqueidentifier] NOT NULL,
+	[ServicesId] [uniqueidentifier] NOT NULL,
+ CONSTRAINT [PK_CouchesServices] PRIMARY KEY CLUSTERED 
+(
+	[CouchesId] ASC,
+	[ServicesId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Orders]    Script Date: 18.05.2023 15:35:53 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Orders](
+	[Id] [uniqueidentifier] NOT NULL,
+	[AbonementsId] [uniqueidentifier] NULL,
+	[ClientsId] [uniqueidentifier] NULL,
+	[Status] [int] NOT NULL,
+ CONSTRAINT [PK_Orders] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Services]    Script Date: 18.05.2023 15:35:53 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Services](
+	[Id] [uniqueidentifier] NOT NULL,
+	[Title] [nvarchar](max) NULL,
+	[Phote] [nvarchar](max) NULL,
+ CONSTRAINT [PK_Services] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Index [IX_AbonementsServices_ServicesId]    Script Date: 18.05.2023 15:35:53 ******/
+CREATE NONCLUSTERED INDEX [IX_AbonementsServices_ServicesId] ON [dbo].[AbonementsServices]
+(
+	[ServicesId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_Comments_ClientsId]    Script Date: 18.05.2023 15:35:53 ******/
+CREATE NONCLUSTERED INDEX [IX_Comments_ClientsId] ON [dbo].[Comments]
+(
+	[ClientsId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_Comments_CouchesId]    Script Date: 18.05.2023 15:35:53 ******/
+CREATE NONCLUSTERED INDEX [IX_Comments_CouchesId] ON [dbo].[Comments]
+(
+	[CouchesId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_CouchesServices_ServicesId]    Script Date: 18.05.2023 15:35:53 ******/
+CREATE NONCLUSTERED INDEX [IX_CouchesServices_ServicesId] ON [dbo].[CouchesServices]
+(
+	[ServicesId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_Orders_AbonementsId]    Script Date: 18.05.2023 15:35:53 ******/
+CREATE NONCLUSTERED INDEX [IX_Orders_AbonementsId] ON [dbo].[Orders]
+(
+	[AbonementsId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_Orders_ClientsId]    Script Date: 18.05.2023 15:35:53 ******/
+CREATE NONCLUSTERED INDEX [IX_Orders_ClientsId] ON [dbo].[Orders]
+(
+	[ClientsId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+ALTER TABLE [dbo].[Clients] ADD  CONSTRAINT [DF__Clients__Photo__625A9A57]  DEFAULT (N'') FOR [Photo]
+GO
+ALTER TABLE [dbo].[Couches] ADD  DEFAULT (N'') FOR [Photo]
+GO
+ALTER TABLE [dbo].[Orders] ADD  DEFAULT ((0)) FOR [Status]
+GO
+ALTER TABLE [dbo].[Services] ADD  CONSTRAINT [DF__Services__Phote__3B40CD36]  DEFAULT (N'') FOR [Phote]
+GO
+ALTER TABLE [dbo].[AbonementsServices]  WITH CHECK ADD  CONSTRAINT [FK_AbonementsServices_Abonements_AbonementsId] FOREIGN KEY([AbonementsId])
+REFERENCES [dbo].[Abonements] ([Id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[AbonementsServices] CHECK CONSTRAINT [FK_AbonementsServices_Abonements_AbonementsId]
+GO
+ALTER TABLE [dbo].[AbonementsServices]  WITH CHECK ADD  CONSTRAINT [FK_AbonementsServices_Services_ServicesId] FOREIGN KEY([ServicesId])
+REFERENCES [dbo].[Services] ([Id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[AbonementsServices] CHECK CONSTRAINT [FK_AbonementsServices_Services_ServicesId]
+GO
+ALTER TABLE [dbo].[Comments]  WITH CHECK ADD  CONSTRAINT [FK_Comments_Clients_ClientsId] FOREIGN KEY([ClientsId])
+REFERENCES [dbo].[Clients] ([Id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[Comments] CHECK CONSTRAINT [FK_Comments_Clients_ClientsId]
+GO
+ALTER TABLE [dbo].[Comments]  WITH CHECK ADD  CONSTRAINT [FK_Comments_Couches_CouchesId] FOREIGN KEY([CouchesId])
+REFERENCES [dbo].[Couches] ([Id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[Comments] CHECK CONSTRAINT [FK_Comments_Couches_CouchesId]
+GO
+ALTER TABLE [dbo].[CouchesServices]  WITH CHECK ADD  CONSTRAINT [FK_CouchesServices_Couches_CouchesId] FOREIGN KEY([CouchesId])
+REFERENCES [dbo].[Couches] ([Id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[CouchesServices] CHECK CONSTRAINT [FK_CouchesServices_Couches_CouchesId]
+GO
+ALTER TABLE [dbo].[CouchesServices]  WITH CHECK ADD  CONSTRAINT [FK_CouchesServices_Services_ServicesId] FOREIGN KEY([ServicesId])
+REFERENCES [dbo].[Services] ([Id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[CouchesServices] CHECK CONSTRAINT [FK_CouchesServices_Services_ServicesId]
+GO
+ALTER TABLE [dbo].[Orders]  WITH CHECK ADD  CONSTRAINT [FK_Orders_Abonements_AbonementsId] FOREIGN KEY([AbonementsId])
+REFERENCES [dbo].[Abonements] ([Id])
+GO
+ALTER TABLE [dbo].[Orders] CHECK CONSTRAINT [FK_Orders_Abonements_AbonementsId]
+GO
+ALTER TABLE [dbo].[Orders]  WITH CHECK ADD  CONSTRAINT [FK_Orders_Clients_ClientsId] FOREIGN KEY([ClientsId])
+REFERENCES [dbo].[Clients] ([Id])
+GO
+ALTER TABLE [dbo].[Orders] CHECK CONSTRAINT [FK_Orders_Clients_ClientsId]
+GO
+USE [master]
+GO
+ALTER DATABASE [FitessCenter] SET  READ_WRITE 
+GO

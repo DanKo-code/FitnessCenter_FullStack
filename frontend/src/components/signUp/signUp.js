@@ -4,6 +4,7 @@ import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Link from '@mui/material/Link';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import axios from 'axios';
 
 export default function SignUp() {
 
@@ -12,7 +13,10 @@ export default function SignUp() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
+
+
+
         event.preventDefault();
         console.log({
             firstName: firstName,
@@ -21,7 +25,25 @@ export default function SignUp() {
             password: password,
         });
 
+        const data = {
+            firstName: firstName,
+            lastName: lastName,
+            email: email,
+            password: password,
+        }
 
+        try {
+            const response = await axios.post('http://localhost:3001/register', data);
+
+            if (response.status === 200) {
+                console.log('Registration successful!');
+                console.log('responseData: ' + JSON.stringify(response.data));
+            } else {
+                console.error('Registration failed.');
+            }
+        } catch (error) {
+            console.error('Error occurred while registering:', error);
+        }
     };
 
     return (
