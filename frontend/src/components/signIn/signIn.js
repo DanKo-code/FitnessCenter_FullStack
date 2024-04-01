@@ -8,10 +8,10 @@ import axios from 'axios';
 import {useDispatch, useSelector} from "react-redux";
 import {setAppState} from '../../states/storeSlice/appStateSlice'
 
-
 export default function SignUp() {
 
     const dispatch = useDispatch();
+
 
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
@@ -74,7 +74,7 @@ export default function SignUp() {
                         </div>
 
                         <h2>
-                            Sign up
+                            Sign in
                         </h2>
                     </div>
                 </div>
@@ -84,30 +84,7 @@ export default function SignUp() {
                     gap: '2%',
                     marginBottom: '2%'
                 }}>
-                    <TextField
-                        autoComplete="given-name"
-                        name="firstName"
-                        required
-                        fullWidth
-                        id="firstName"
-                        label="First Name"
-                        autoFocus
-                        value={firstName}
-                        onChange={(event) => {
-                            setFirstName(event.target.value)
-                        }}
-                    />
-                    <TextField
-                        fullWidth
-                        id="lastName"
-                        label="Last Name"
-                        name="lastName"
-                        autoComplete="family-name"
-                        value={lastName}
-                        onChange={(event) => {
-                            setLastName(event.target.value)
-                        }}
-                    />
+
                 </div>
 
                 <TextField style={{
@@ -144,7 +121,7 @@ export default function SignUp() {
                         fullWidth
                         variant="contained"
                 >
-                    Sign Up
+                    Sign In
                 </Button>
                 <div style={{
                     display: 'flex',
@@ -152,10 +129,10 @@ export default function SignUp() {
                 }}>
                     <Link href="#" variant="body2"
                           onClick={event => {
-                              dispatch(setAppState('signIn'));
+                              dispatch(setAppState('signUp'));
                               event.stopPropagation()
                           }}>
-                        Already have an account? Sign in
+                        Don't have an account? Sign up
                     </Link>
                 </div>
             </div>

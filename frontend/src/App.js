@@ -1,35 +1,33 @@
 import React, {useState, useEffect} from 'react'
 import SignUp from './components/signUp/signUp'
+import SignIn from './components/signIn/signIn'
 import Button  from '@mui/material/Button'
+import { useSelector } from "react-redux";
+
+
 
 function App() {
 
-    const [data, setData] = useState(null)
+    const appState = useSelector((state) => state.appSateSliceMode.appState);
 
-    useEffect(()=>{
-        fetch('/api')
-            .then(response=>response.json())
-            .then(response => setData(response.message))
-    },[])
+
+
+    // Используйте useEffect для слежения за изменениями состояния и обновления компонента
+    useEffect(() => {
+
+        // Логика для обновления состояния компонента
+        // Например, если возвращается строка "signUp", то отобразите компонент SignUp
+        // Если возвращается строка "signIn", то отобразите компонент SignIn
+    }, [appState]); // Передаем appState в массив зависимостей, чтобы useEffect запускался при изменении этого состояния
+
 
     return (
         <div className="App">
 
-            <SignUp></SignUp>
+            {/* Условный рендеринг на основе состояния из Redux */}
+            {appState === 'signUp' && <SignUp />}
+            {appState === 'signIn' && <SignIn />}
 
-            {/*<header className="App-header">*/}
-            {/*    <img  className="App-logo" alt="logo"/>*/}
-            {/*    <p>*/}
-            {/*        {*/}
-            {/*            !data ? "Loading...":data*/}
-            {/*        }*/}
-            {/*    </p>*/}
-
-            {/*</header>*/}
-
-            {/*<section>*/}
-            {/*    <Button variant="contained">Register</Button>*/}
-            {/*</section>*/}
         </div>
     );
 }

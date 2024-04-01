@@ -7,94 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Abonements {
-  Id                 String               @id(map: "PK_Abonements") @db.UniqueIdentifier
-  Title              String?              @db.NVarChar(Max)
-  Age                Int?
-  Validity           String?              @db.NVarChar(Max)
-  VisitingTime       String?              @db.NVarChar(Max)
-  Amount             Int?
-  Photo              String?              @db.NVarChar(Max)
-  Price              Int?
-  AbonementsServices AbonementsServices[]
-  Orders             Orders[]
-}
-
-model AbonementsServices {
-  AbonementsId String     @db.UniqueIdentifier
-  ServicesId   String     @db.UniqueIdentifier
-  Abonements   Abonements @relation(fields: [AbonementsId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_AbonementsServices_Abonements_AbonementsId")
-  Services     Services   @relation(fields: [ServicesId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_AbonementsServices_Services_ServicesId")
-
-  @@id([AbonementsId, ServicesId], map: "PK_AbonementsServices")
-  @@index([ServicesId], map: "IX_AbonementsServices_ServicesId")
-}
-
-model Clients {
-  Id       String     @id(map: "PK_Clients") @db.UniqueIdentifier
-  Name     String     @db.NVarChar(Max)
-  SurName  String     @db.NVarChar(Max)
-  Login    String     @db.NVarChar(Max)
-  Email    String     @db.NVarChar(Max)
-  Phone    String     @db.NVarChar(Max)
-  Role     Int
-  Password String     @db.NVarChar(Max)
-  Photo    String?    @default("N'", map: "DF__Clients__Photo__625A9A57") @db.NVarChar(Max)
-  Comments Comments[]
-  Orders   Orders[]
-}
-
-model Comments {
-  Id          String  @id(map: "PK_Comments") @db.UniqueIdentifier
-  CommentBody String  @db.NVarChar(Max)
-  ClientsId   String  @db.UniqueIdentifier
-  CouchesId   String  @db.UniqueIdentifier
-  Clients     Clients @relation(fields: [ClientsId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Comments_Clients_ClientsId")
-  Couches     Couches @relation(fields: [CouchesId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Comments_Couches_CouchesId")
-
-  @@index([ClientsId], map: "IX_Comments_ClientsId")
-  @@index([CouchesId], map: "IX_Comments_CouchesId")
-}
-
-model Couches {
-  Id              String            @id(map: "PK_Couches") @db.UniqueIdentifier
-  Name            String            @db.NVarChar(Max)
-  Description     String            @db.NVarChar(Max)
-  Photo           String            @default("N'", map: "DF__Couches__Photo__59FA5E80") @db.NVarChar(Max)
-  Comments        Comments[]
-  CouchesServices CouchesServices[]
-}
-
-model CouchesServices {
-  CouchesId  String   @db.UniqueIdentifier
-  ServicesId String   @db.UniqueIdentifier
-  Couches    Couches  @relation(fields: [CouchesId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_CouchesServices_Couches_CouchesId")
-  Services   Services @relation(fields: [ServicesId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_CouchesServices_Services_ServicesId")
-
-  @@id([CouchesId, ServicesId], map: "PK_CouchesServices")
-  @@index([ServicesId], map: "IX_CouchesServices_ServicesId")
-}
-
-model Orders {
-  Id           String      @id(map: "PK_Orders") @db.UniqueIdentifier
-  AbonementsId String?     @db.UniqueIdentifier
-  ClientsId    String?     @db.UniqueIdentifier
-  Status       Int         @default(0, map: "DF__Orders__Status__5AEE82B9")
-  Abonements   Abonements? @relation(fields: [AbonementsId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_Orders_Abonements_AbonementsId")
-  Clients      Clients?    @relation(fields: [ClientsId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_Orders_Clients_ClientsId")
-
-  @@index([AbonementsId], map: "IX_Orders_AbonementsId")
-  @@index([ClientsId], map: "IX_Orders_ClientsId")
-}
-
-model Services {
-  Id                 String               @id(map: "PK_Services") @db.UniqueIdentifier
-  Title              String?              @db.NVarChar(Max)
-  Phote              String?              @default("N'", map: "DF__Services__Phote__3B40CD36") @db.NVarChar(Max)
-  AbonementsServices AbonementsServices[]
-  CouchesServices    CouchesServices[]
-}
-
 model sysdiagrams {
   name         String @db.NVarChar(128)
   principal_id Int
@@ -103,4 +15,90 @@ model sysdiagrams {
   definition   Bytes?
 
   @@unique([principal_id, name], map: "UK_principal_name")
+}
+
+model Abonement {
+  Id                String              @id(map: "PK_Abonements") @db.UniqueIdentifier
+  Title             String?             @db.NVarChar(Max)
+  Age               Int?
+  Validity          String?             @db.NVarChar(Max)
+  VisitingTime      String?             @db.NVarChar(Max)
+  Amount            Int?
+  Photo             String?             @db.NVarChar(Max)
+  Price             Int?
+  AbonementsService AbonementsService[]
+  Order             Order[]
+}
+
+model AbonementsService {
+  AbonementsId String    @db.UniqueIdentifier
+  ServicesId   String    @db.UniqueIdentifier
+  Abonement    Abonement @relation(fields: [AbonementsId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_AbonementsServices_Abonements_AbonementsId")
+  Service      Service   @relation(fields: [ServicesId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_AbonementsServices_Services_ServicesId")
+
+  @@id([AbonementsId, ServicesId], map: "PK_AbonementsServices")
+  @@index([ServicesId], map: "IX_AbonementsServices_ServicesId")
+}
+
+model Client {
+  Id        String    @id(map: "PK_Clients") @db.UniqueIdentifier
+  FirstName String    @db.NVarChar(Max)
+  LastName  String    @db.NVarChar(Max)
+  Email     String    @db.NVarChar(Max)
+  Role      Int
+  Password  String    @db.NVarChar(Max)
+  Photo     String?   @default("N'", map: "DF__Clients__Photo__625A9A57") @db.NVarChar(Max)
+  Comment   Comment[]
+  Order     Order[]
+}
+
+model Comment {
+  Id          String @id(map: "PK_Comments") @db.UniqueIdentifier
+  CommentBody String @db.NVarChar(Max)
+  ClientsId   String @db.UniqueIdentifier
+  CouchesId   String @db.UniqueIdentifier
+  Client      Client @relation(fields: [ClientsId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Comments_Clients_ClientsId")
+  Couche      Couche @relation(fields: [CouchesId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Comments_Couches_CouchesId")
+
+  @@index([ClientsId], map: "IX_Comments_ClientsId")
+  @@index([CouchesId], map: "IX_Comments_CouchesId")
+}
+
+model Couche {
+  Id             String           @id(map: "PK_Couches") @db.UniqueIdentifier
+  Name           String           @db.NVarChar(Max)
+  Description    String           @db.NVarChar(Max)
+  Photo          String           @default("N'", map: "DF__Couches__Photo__59FA5E80") @db.NVarChar(Max)
+  Comment        Comment[]
+  CouchesService CouchesService[]
+}
+
+model CouchesService {
+  CouchesId  String  @db.UniqueIdentifier
+  ServicesId String  @db.UniqueIdentifier
+  Couche     Couche  @relation(fields: [CouchesId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_CouchesServices_Couches_CouchesId")
+  Service    Service @relation(fields: [ServicesId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_CouchesServices_Services_ServicesId")
+
+  @@id([CouchesId, ServicesId], map: "PK_CouchesServices")
+  @@index([ServicesId], map: "IX_CouchesServices_ServicesId")
+}
+
+model Order {
+  Id           String     @id(map: "PK_Orders") @db.UniqueIdentifier
+  AbonementsId String?    @db.UniqueIdentifier
+  ClientsId    String?    @db.UniqueIdentifier
+  Status       Int        @default(0, map: "DF__Orders__Status__5AEE82B9")
+  Abonement    Abonement? @relation(fields: [AbonementsId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_Orders_Abonements_AbonementsId")
+  Client       Client?    @relation(fields: [ClientsId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_Orders_Clients_ClientsId")
+
+  @@index([AbonementsId], map: "IX_Orders_AbonementsId")
+  @@index([ClientsId], map: "IX_Orders_ClientsId")
+}
+
+model Service {
+  Id                String              @id(map: "PK_Services") @db.UniqueIdentifier
+  Title             String?             @db.NVarChar(Max)
+  Phote             String?             @default("N'", map: "DF__Services__Phote__3B40CD36") @db.NVarChar(Max)
+  AbonementsService AbonementsService[]
+  CouchesService    CouchesService[]
 }

@@ -1,7 +1,7 @@
 import {createSlice} from "@reduxjs/toolkit"
 
 const initialState = {
-    appState: "register"
+    appState: "signUp"
 }
 
 const appSateSlice = createSlice({
