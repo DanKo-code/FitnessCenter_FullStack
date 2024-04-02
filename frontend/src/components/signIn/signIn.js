@@ -8,13 +8,10 @@ import axios from 'axios';
 import {useDispatch, useSelector} from "react-redux";
 import {setAppState} from '../../states/storeSlice/appStateSlice'
 
-export default function SignUp() {
+export default function SignIn() {
 
     const dispatch = useDispatch();
 
-
-    const [firstName, setFirstName] = useState('');
-    const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
@@ -23,21 +20,17 @@ export default function SignUp() {
 
         event.preventDefault();
         console.log({
-            firstName: firstName,
-            lastName: lastName,
             email: email,
             password: password,
         });
 
         const data = {
-            firstName: firstName,
-            lastName: lastName,
             email: email,
             password: password,
         }
 
         try {
-            const response = await axios.post('http://localhost:3001/register', data);
+            const response = await axios.get('http://localhost:3001/signIn', data);
 
             if (response.status === 200) {
                 console.log('Registration successful!');

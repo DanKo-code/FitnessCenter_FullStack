@@ -37,16 +37,16 @@ export default function SignUp() {
         }
 
         try {
-            const response = await axios.post('http://localhost:3001/register', data);
+            const response = await axios.post('http://localhost:3001/signUp', data);
+
+            console.log('response: '+JSON.stringify(response, null, 2))
 
             if (response.status === 200) {
                 console.log('Registration successful!');
                 console.log('responseData: ' + JSON.stringify(response.data));
-            } else {
-                console.error('Registration failed.');
             }
         } catch (error) {
-            console.error('Error occurred while registering:', error);
+            console.error('response.status: ' + JSON.stringify(error.response.data.message, null, 2))
         }
     };
 
