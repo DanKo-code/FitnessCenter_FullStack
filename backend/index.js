@@ -58,16 +58,21 @@ app.post('/signUp',  async (req, res)=>{
     res.status(200).json({message: 'Client added successful'})
 })
 
-app.get('signIn', async (req, res)=>{
+app.post('/signIn', async (req, res)=>{
     const { email, password } = req.body;
 
     try {
         // Находим пользователя по адресу электронной почты
-        const user = await prismaClient.client.findUnique({
+        const user = await prismaClient.client.findFirst({
             where: {
                 Email: email
             }
         });
+
+        console.log('email: '+JSON.stringify(req.body, null, 2))
+        console.log('password: '+JSON.stringify(req.body, null, 2))
+
+        console.log('user: '+JSON.stringify(user, null, 2))
 
         // Если пользователь не найден, отправляем ошибку 404
         if (!user) {

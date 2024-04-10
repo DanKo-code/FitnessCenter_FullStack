@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react'
 import SignUp from './components/signUp/signUp'
 import SignIn from './components/signIn/signIn'
+import Main from './components/Main/main'
 import Button  from '@mui/material/Button'
 import { useSelector } from "react-redux";
 
@@ -27,6 +28,7 @@ function App() {
             {/* Условный рендеринг на основе состояния из Redux */}
             {appState === 'signUp' && <SignUp />}
             {appState === 'signIn' && <SignIn />}
+            {appState === 'main' && <Main />}
 
         </div>
     );

@@ -44,6 +44,9 @@ export default function SignUp() {
             if (response.status === 200) {
                 console.log('Registration successful!');
                 console.log('responseData: ' + JSON.stringify(response.data));
+
+                //Переход на sign in
+                dispatch(setAppState('signIn'));
             }
         } catch (error) {
             console.error('response.status: ' + JSON.stringify(error.response.data.message, null, 2))
