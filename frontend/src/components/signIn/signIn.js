@@ -2,13 +2,15 @@ import React, {useState} from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
-import Link from '@mui/material/Link';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import axios from 'axios';
 import {useDispatch, useSelector} from "react-redux";
 import {setAppState} from '../../states/storeSlice/appStateSlice'
+import { useNavigate, Link } from 'react-router-dom';
+
 
 export default function SignIn() {
+    const navigate = useNavigate();
 
     const dispatch = useDispatch();
 
@@ -35,7 +37,8 @@ export default function SignIn() {
             if (response.status === 200) {
                 console.log('Registration successful!');
                 console.log('responseData: ' + JSON.stringify(response.data));
-                dispatch(setAppState('main'));
+                //dispatch(setAppState('main'));
+                navigate('/main');
             }
         } catch (error) {
             console.error('response.status: ' + JSON.stringify(error.response.data.message, null, 2))
@@ -119,11 +122,11 @@ export default function SignIn() {
                     display: 'flex',
                     justifyContent: "end"
                 }}>
-                    <Link href="#" variant="body2"
-                          onClick={event => {
-                              dispatch(setAppState('signUp'));
-                              event.stopPropagation()
-                          }}>
+                    <Link
+
+                          to={'/signup'}
+
+                          >
                         Don't have an account? Sign up
                     </Link>
                 </div>

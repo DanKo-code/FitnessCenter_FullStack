@@ -7,23 +7,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model sysdiagrams {
-  name         String @db.NVarChar(128)
-  principal_id Int
-  diagram_id   Int    @id(map: "PK__sysdiagr__C2B05B61CFCC380D") @default(autoincrement())
-  version      Int?
-  definition   Bytes?
-
-  @@unique([principal_id, name], map: "UK_principal_name")
-}
-
 model Abonement {
   Id                String              @id(map: "PK_Abonements") @db.UniqueIdentifier
   Title             String?             @db.NVarChar(Max)
-  Age               Int?
   Validity          String?             @db.NVarChar(Max)
   VisitingTime      String?             @db.NVarChar(Max)
-  Amount            Int?
   Photo             String?             @db.NVarChar(Max)
   Price             Int?
   AbonementsService AbonementsService[]
@@ -101,4 +89,14 @@ model Service {
   Phote             String?             @default("N'", map: "DF__Services__Phote__3B40CD36") @db.NVarChar(Max)
   AbonementsService AbonementsService[]
   CouchesService    CouchesService[]
+}
+
+model sysdiagrams {
+  name         String @db.NVarChar(128)
+  principal_id Int
+  diagram_id   Int    @id(map: "PK__sysdiagr__C2B05B61CFCC380D") @default(autoincrement())
+  version      Int?
+  definition   Bytes?
+
+  @@unique([principal_id, name], map: "UK_principal_name")
 }

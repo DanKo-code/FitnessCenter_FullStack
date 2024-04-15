@@ -2,16 +2,17 @@ import React, {useState} from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
-import Link from '@mui/material/Link';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import axios from 'axios';
 import {useDispatch, useSelector} from "react-redux";
 import {setAppState} from '../../states/storeSlice/appStateSlice'
+import { useNavigate, Link } from 'react-router-dom';
+
 
 
 export default function SignUp() {
 
-    const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
@@ -45,8 +46,7 @@ export default function SignUp() {
                 console.log('Registration successful!');
                 console.log('responseData: ' + JSON.stringify(response.data));
 
-                //Переход на sign in
-                dispatch(setAppState('signIn'));
+                navigate('/signin');
             }
         } catch (error) {
             console.error('response.status: ' + JSON.stringify(error.response.data.message, null, 2))
@@ -153,11 +153,7 @@ export default function SignUp() {
                     display: 'flex',
                     justifyContent: "end"
                 }}>
-                    <Link href="#" variant="body2"
-                          onClick={event => {
-                              dispatch(setAppState('signIn'));
-                              event.stopPropagation()
-                          }}>
+                    <Link to={'/signin'}>
                         Already have an account? Sign in
                     </Link>
                 </div>

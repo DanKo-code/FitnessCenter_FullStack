@@ -97,3 +97,10 @@ app.post('/signIn', async (req, res)=>{
     }
 })
 
+app.get('/abonnements', async (req, res) =>{
+    const abonnements = await prismaClient.abonement.findMany();
+
+    console.log('abonnements: '+JSON.stringify(abonnements, null, 2));
+
+    res.status(200).json(abonnements);
+})
