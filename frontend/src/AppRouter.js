@@ -4,6 +4,7 @@ import SignIn from './components/signIn/signIn';
 import MainNavHome from './components/MainNavHome/MainNavHome'
 import SignUp from "./components/signUp/signUp";
 import MainNavAbonnements from './components/MainNavAbonnements/MainNavAbonnements';
+import MainNavProfile from "./components/MainNavProfile/MainNavProfile";
 
 export function AppRouter() {
     return (
@@ -27,6 +28,11 @@ export function AppRouter() {
             <Route
                 path='/main/abonnements'
                 element={ <MainNavAbonnements /> }
+            />
+
+            <Route
+                path='/main/profile'
+                element={ <MainNavProfile /> }
             />
         </Routes>
     );
