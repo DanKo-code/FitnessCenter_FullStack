@@ -98,9 +98,57 @@ app.post('/signIn', async (req, res)=>{
 })
 
 app.get('/abonnements', async (req, res) =>{
-    const abonnements = await prismaClient.abonement.findMany();
+    const abonnements = await prismaClient.abonement.findMany({include: {
+            AbonementsService: {
+                include: {
+                    Service: true // Включаем информацию о связанном сервисе
+                }
+            }
+        }});
 
     console.log('abonnements: '+JSON.stringify(abonnements, null, 2));
+    console.log('abonnements[0]: '+JSON.stringify(abonnements[0], null, 2));
 
     res.status(200).json(abonnements);
 })
+
+/*app.get('/services', async (req, res) =>{
+    const services = await prismaClient.service.findMany();
+
+    console.log('services: '+JSON.stringify(services, null, 2));
+
+    res.status(200).json(services);
+})*/
+
+/*
+app.post('/services/add', async (req, res) =>{
+
+    try {
+        const serviceId = uuidv4();
+        const serviceTitle = req.body.title;
+        const service = await prismaClient.service.create({
+            data: {
+                Id: serviceId,
+                Title: serviceTitle
+            }
+        });
+        console.log('services: '+JSON.stringify(service, null, 2));
+
+        const abonnementsService = await prismaClient.abonementsService.create({
+            data: {
+
+            }
+        })
+
+        res.status(200).json(services);
+    }
+    catch (e){
+        console.error(e);
+        res.status(400).json({message: 'Service hasn\'t been added'})
+    }
+
+
+
+
+
+})*/

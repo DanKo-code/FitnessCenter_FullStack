@@ -14,16 +14,16 @@ import sad_doing_abonnements_card from '../../../images/sad_doing_abonnements_ca
 
 export default function MainAbonnements() {
 
-    const services = [{id: 1, name: 'Pool'}, {id: 2, name: 'Gym'}, {id: 3, name: 'Sauna'}]
-
     const [age, setAge] = useState('');
-    const [email, setEmail] = useState('');
+    const [titleSearch, setTitleSearch] = useState('');
     const [abonnements, setAbonnements] = useState([]);
+    const [searchedAbonnements, setSearchedAbonnements] = useState([]);
 
     useEffect(() => {
         axios.get('http://localhost:3001/abonnements')
             .then(response => {
                 setAbonnements(response.data);
+                setSearchedAbonnements(response.data);
             })
             .catch(error => {
                 console.error('Failed to fetch abonnements:', error);
@@ -34,8 +34,9 @@ export default function MainAbonnements() {
         setAge(event.target.value);
     };
 
-    const handleEmailChange = (event) => {
-        setEmail(event.target.value);
+    const handleTitleSearchChange = (event) => {
+        setTitleSearch(event.target.value);
+        console.log('handleTitleSearchChange: '+JSON.stringify(event.target.value, null, 2))
     };
 
     return (
@@ -74,8 +75,8 @@ export default function MainAbonnements() {
                         label="name search"
                         name="search"
                         autoComplete="search"
-                        value={email}
-                        onChange={handleEmailChange}
+                        value={titleSearch}
+                        onChange={handleTitleSearchChange}
                     />
                 </div>
                 <div style={{display: 'flex', justifyContent: 'center'}}>
@@ -128,13 +129,13 @@ export default function MainAbonnements() {
 
                                 <div style={{paddingLeft: '20px', paddingRight:'40px', marginTop: '20px', display: 'flex', justifyContent: 'space-between'}}>
                                     <div style={{display: 'flex', }}>
-                                        {services.map(service => (
+                                        {abonnement.AbonementsService.map(AbonementService => (
                                             <div style={{marginRight: '10px'}}>
                                                 <div style={{width: '80px', height: '60px'}}>
                                                     <img style={{width: '100%', height: 'auto'}}
                                                          src={sad_doing_abonnements_card}/>
                                                 </div>
-                                                <div>{service.name}</div>
+                                                <div>{AbonementService.Service.Title}</div>
                                             </div>
                                         ))}
                                     </div>
