@@ -16,6 +16,8 @@ app.use(express.json())
 
 app.use(cors());
 
+
+
 app.post('/signUp',  async (req, res)=>{
 
     // Находим пользователя по адресу электронной почты
@@ -29,8 +31,6 @@ app.post('/signUp',  async (req, res)=>{
     if (user) {
         return res.status(404).json({ message: 'Email already exists' });
     }
-
-    console.log('After user check')
 
     const clientId = uuidv4();
     // Хэшируем пароль перед сохранением в базу данных
@@ -49,8 +49,6 @@ app.post('/signUp',  async (req, res)=>{
             }
         });
 
-        console.log('client: '+ JSON.stringify(client, null, 2));
-
     }catch (e){
         res.status(400).json({message: 'Client hasn\'t been added'})
     }
@@ -68,11 +66,6 @@ app.post('/signIn', async (req, res)=>{
                 Email: email
             }
         });
-
-        console.log('email: '+JSON.stringify(req.body, null, 2))
-        console.log('password: '+JSON.stringify(req.body, null, 2))
-
-        console.log('user: '+JSON.stringify(user, null, 2))
 
         // Если пользователь не найден, отправляем ошибку 404
         if (!user) {
@@ -106,49 +99,151 @@ app.get('/abonnements', async (req, res) =>{
             }
         }});
 
-    console.log('abonnements: '+JSON.stringify(abonnements, null, 2));
-    console.log('abonnements[0]: '+JSON.stringify(abonnements[0], null, 2));
-
     res.status(200).json(abonnements);
 })
 
-/*app.get('/services', async (req, res) =>{
-    const services = await prismaClient.service.findMany();
+app.post('/clients', async(req, res) => {
 
-    console.log('services: '+JSON.stringify(services, null, 2));
+    try{
+        if(!req.body.email){
+            return res.status(404).json({ message: 'User not exists' });
+        }
 
-    res.status(200).json(services);
-})*/
-
-/*
-app.post('/services/add', async (req, res) =>{
-
-    try {
-        const serviceId = uuidv4();
-        const serviceTitle = req.body.title;
-        const service = await prismaClient.service.create({
-            data: {
-                Id: serviceId,
-                Title: serviceTitle
+        const user = await prismaClient.client.findFirst({
+            where: {
+                Email: req.body.email
             }
         });
-        console.log('services: '+JSON.stringify(service, null, 2));
 
-        const abonnementsService = await prismaClient.abonementsService.create({
-            data: {
+        if (!user) {
+            return res.status(404).json({ message: 'User not exists' });
+        }
+
+        console.log('req.body.email: '+JSON.stringify(req.body.email, null, 2))
+        console.log('req.body.LastName: '+JSON.stringify(req.body.lastName, null, 2))
+        console.log('req.body.Password: '+JSON.stringify(req.body.password, null, 2))
+        console.log('user.Id: '+JSON.stringify(user.Id, null, 2))
+        const client = await prismaClient.client.update({
+            where:{
+                Id:  user.Id
+            },
+            data:{
+                FirstName: req.body.firstName,
+                LastName: req.body.lastName,
+                Password: req.body.password,
+            }
+        })
+
+        console.log('updated client: '+JSON.stringify(client, null, 2))
+
+        res.status(200).json(client)
+    }catch (e){
+        console.log(e);
+
+        res.status(400).json({message: 'Client hasn\'t been updated'})
+    }
+})
+
+app.post('/ordersByUser', async(req, res) =>{
+    try{
+
+        console.log('req.body.Email: '+JSON.stringify(req.body.Email, null, 2))
+        if(!req.body.Email){
+            return res.status(404).json({ message: 'User not exists' });
+        }
+
+        const user = await prismaClient.client.findFirst({
+            where: {
+                Email: req.body.Email
+            }
+        });
+
+        console.log('user: '+JSON.stringify(user, null, 2))
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not exists' });
+        }
+
+        const orders = await prismaClient.order.findMany({
+            where:{
+                ClientsId:  user.Id
+            },
+            include: {
+                Abonement: {
+                    include: {
+                        AbonementsService: {
+                            include: {
+                                Service: true // Включаем информацию о связанном сервисе
+                            }
+                        }
+                    }
+                }, // Включаем связанный объект Abonement для каждого заказа
 
             }
         })
 
-        res.status(200).json(services);
+        console.log('all order: '+JSON.stringify(orders, null, 2))
+
+        res.status(200).json(orders)
+    }catch (e){
+        console.log(e);
+
+        res.status(400).json({message: 'Orders can\'t be retrieved'})
     }
-    catch (e){
-        console.error(e);
-        res.status(400).json({message: 'Service hasn\'t been added'})
+})
+
+app.post('/orders', async(req, res) =>{
+    try{
+
+        console.log('req.body.user.Email: '+JSON.stringify(req.body.user.Email, null, 2))
+        if(!req.body.user.Email){
+            return res.status(404).json({ message: 'User not exists' });
+        }
+
+        const user = await prismaClient.client.findFirst({
+            where: {
+                Email: req.body.user.Email
+            }
+        });
+        console.log('found user: '+JSON.stringify(user, null, 2))
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not exists' });
+        }
+
+        //////////////////////////////
+
+        if(!req.body.abonnement.Title){
+            return res.status(404).json({ message: 'Abonnement not exists' });
+        }
+        console.log('found user: '+JSON.stringify(user, null, 2))
+
+        const abonnement = await prismaClient.abonement.findFirst({
+            where: {
+                Title: req.body.abonnement.Title
+            }
+        });
+
+        if (!abonnement) {
+            return res.status(404).json({ message: 'Abonnement not exists' });
+        }
+
+        const orderId = uuidv4();
+        const order = await prismaClient.order.create({
+            data: {
+                Id: orderId,
+                AbonementsId: abonnement.Id,
+                ClientsId: user.Id,
+                Status: 1
+            }
+        })
+
+        console.log('created order: '+JSON.stringify(order, null, 2))
+
+        res.status(200).json(order)
+    }catch (e){
+        console.log(e);
+
+        res.status(400).json({message: 'Orders can\'t be retrieved'})
     }
-
-
-
-
-
-})*/
+})

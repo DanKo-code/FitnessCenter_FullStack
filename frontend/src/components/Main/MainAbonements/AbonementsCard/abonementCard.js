@@ -3,11 +3,36 @@ import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import LocalAtmIcon from "@mui/icons-material/LocalAtm";
 import sad_doing_abonnements_card from "../../../../images/sad_doing_abonnements_card.jpg";
 import Button from "@mui/material/Button";
-import React from "react";
+import React, {useEffect} from "react";
+import axios from 'axios';
+import {useDispatch, useSelector} from "react-redux";
 
-export default function AbonnementCard(props) {
 
-    const { abonnement, width, height } = props;
+    export default function AbonnementCard(props) {
+
+        const dispatch = useDispatch();
+        let user = useSelector((state) => state.userSliceMode.user);
+
+        const { abonnement, width, height, buyButton } = props;
+
+        const handleBuy = async (event) => {
+            try{
+
+                const data = {
+                    user: user,
+                    abonnement: abonnement
+                }
+
+                const response = await axios.post('http://localhost:3001/orders', data);
+            }catch (e){
+                console.error('response.status: ' + JSON.stringify(e.response.data.message, null, 2))
+            }
+        }
+
+        useEffect(() => {
+
+            console.log('from props: '+JSON.stringify(abonnement, null,2))
+        }, []);
 
     return (
         <div style={{
@@ -96,16 +121,19 @@ export default function AbonnementCard(props) {
                     ))}
                 </div>
 
-                <Button
+                {buyButton ? <Button
                     style={{
                         color: 'white',
                         background: 'rgba(117,100,163,255)',
                         width: '170px',
                         height: '50px'
                     }}
+
+                    onClick={handleBuy}
                 >
                     Buy
-                </Button>
+                </Button>: <div/>}
+
             </div>
         </div>
     )

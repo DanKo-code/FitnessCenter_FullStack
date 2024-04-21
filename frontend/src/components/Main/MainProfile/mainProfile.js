@@ -4,8 +4,13 @@ import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import axios from "axios";
 import AbonnementCard from "../MainAbonements/AbonementsCard/abonementCard";
+import {setUser} from "../../../states/storeSlice/appStateSlice";
+import {useDispatch, useSelector} from "react-redux";
+
 
 export default function MainProfile() {
+
+    const dispatch = useDispatch();
 
     //const [photo, setPhoto] = useState('');
     const [lastName, setLastName] = useState('');
@@ -14,18 +19,38 @@ export default function MainProfile() {
     const [password, setPassword] = useState('');
     const [showAbonnementsList, setShowAbonnementsList] = useState(true);
     const [abonnements, setAbonnements] = useState([]);
+
+    let user = useSelector((state) => state.userSliceMode.user);
+
+    // useEffect для установки данных пользователя
     useEffect(() => {
-        axios.get('http://localhost:3001/abonnements')
-            .then(response => {
-                setAbonnements(response.data);
-            })
-            .catch(error => {
-                console.error('Failed to fetch abonnements:', error);
-            });
-    }, []);
+
+        if (user) {
+            setLastName(user.LastName);
+            setFirstName(user.FirstName);
+            setEmail(user.Email);
+            setPassword(user.Password);
+
+            axios.post('http://localhost:3001/ordersByUser', user)
+                .then(response => {
+
+                    console.log('response.data!!!!!!!!!!!!!!!!!!!!!!!!!!: ' + JSON.stringify(response.data, null, 2))
+
+                    console.log('just abonnements: ' + JSON.stringify(response.data.map(item => item.Abonement), null, 2));
+
+                    setAbonnements(response.data.map(item => item.Abonement))
+
+                })
+                .catch(error => {
+                    console.error('Failed to fetch abonnements:', error);
+                });
+        }
+    }, [user]); // Выполнится только при изменении `user`
+
+    useEffect(() => {
+        console.log('After setAbonnements -> abonnements: ' + JSON.stringify(abonnements, null, 2))
 
 
-    useEffect(() => {
         if (abonnements.length === 0) {
             setShowAbonnementsList(false);
         } else {
@@ -49,7 +74,30 @@ export default function MainProfile() {
         setPassword(event.target.value);
     }
 
+    const handleSubmit = async (event) => {
+        event.preventDefault();
 
+        const datae = {
+            lastName: lastName,
+            firstName: firstName,
+            password: password,
+            email: email
+        }
+
+        try {
+            const response = await axios.post('http://localhost:3001/clients', datae);
+
+            if (response.status === 200) {
+                dispatch(setUser(response.data));
+                setLastName(response.data.LastName);
+                setFirstName(response.data.FirstName);
+                setEmail(response.data.Email);
+                setPassword(response.data.Password);
+            }
+        } catch (error) {
+            console.error('response.status: ' + JSON.stringify(error.response.data.message, null, 2))
+        }
+    }
 
     return (
         <div style={{
@@ -105,17 +153,27 @@ export default function MainProfile() {
                             background: 'rgb(160, 147, 197)',
                             height: '50px'
                         }}
+
+                        onClick={handleSubmit}
                     >
                         Submit
                     </Button>
                 </div>
 
                 <div style={{width: '40%'}}>
-                    <div style={{display: 'flex', justifyContent: 'center', marginBottom: '20px', fontSize: '24px'}}>Purchased Abonnements</div>
-                    <div style={{ height: '550px', overflowY: 'scroll'}}>
-                        {abonnements.map(abonnement => (
-                            <AbonnementCard abonnement={abonnement}/>
-                        ))}
+                    <div style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        marginBottom: '20px',
+                        fontSize: '24px'
+                    }}>Purchased Abonnements
+                    </div>
+                    <div style={{height: '550px', overflowY: 'scroll'}}>
+                        {setShowAbonnementsList ? <div>
+                            {abonnements.map(abonnement => (
+                                <AbonnementCard abonnement={abonnement}/>
+                            ))}
+                        </div> : <div>There are no orders</div>}
                     </div>
                 </div>
 

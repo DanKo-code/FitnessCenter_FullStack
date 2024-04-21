@@ -1,7 +1,8 @@
 import {createSlice} from "@reduxjs/toolkit"
 
 const initialState = {
-    appState: "signUp"
+    appState: "signUp",
+    user: ""
 }
 
 const appSateSlice = createSlice({
@@ -10,9 +11,13 @@ const appSateSlice = createSlice({
     reducers: {
         setAppState(state, action){
             state.appState = action.payload
+        },
+
+        setUser(state, action){
+            state.user = action.payload
         }
     }
 })
 
-export const {setAppState} = appSateSlice.actions
+export const {setAppState, setUser} = appSateSlice.actions
 export default appSateSlice.reducer

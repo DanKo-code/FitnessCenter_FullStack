@@ -6,6 +6,7 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import axios from 'axios';
 import {useDispatch, useSelector} from "react-redux";
 import {setAppState} from '../../states/storeSlice/appStateSlice'
+import {setUser} from '../../states/storeSlice/appStateSlice'
 import { useNavigate, Link } from 'react-router-dom';
 
 
@@ -21,10 +22,6 @@ export default function SignIn() {
 
 
         event.preventDefault();
-        console.log({
-            email: email,
-            password: password,
-        });
 
         const data = {
             email: email,
@@ -35,9 +32,7 @@ export default function SignIn() {
             const response = await axios.post('http://localhost:3001/signIn', data);
 
             if (response.status === 200) {
-                console.log('Registration successful!');
-                console.log('responseData: ' + JSON.stringify(response.data));
-                //dispatch(setAppState('main'));
+                dispatch(setUser(response.data));
                 navigate('/main');
             }
         } catch (error) {

@@ -37,13 +37,9 @@ export default function MainAbonnements() {
         setTitleSearch(event.target.value);
 
         if(!event.target.value){
-            console.log('show all')
-
             setSearchedAbonnements(abonnements);
         }
         else{
-            console.log('searched abonnements: '+JSON.stringify(abonnements.filter(abonnement => abonnement.Title.toLowerCase().includes(event.target.value.toLowerCase()))))
-
             setSearchedAbonnements(abonnements.filter(abonnement => abonnement.Title.toLowerCase().includes(event.target.value.toLowerCase())));
         }
     };
@@ -106,7 +102,7 @@ export default function MainAbonnements() {
                 <div style={{display: 'flex', justifyContent: 'center'}}>
                     {showAbonnementsList ? <div style={{marginTop: '40px', height: '400px', overflowY: 'scroll'}}>
                         {searchedAbonnements.map(abonnement => (
-                            <AbonnementCard abonnement={abonnement} width={'600px'} height={'400px'}/>
+                            <AbonnementCard abonnement={abonnement} width={'600px'} height={'400px'} buyButton={{buttonState:true}}/>
                         ))}
                     </div> : <div>There are no such abonnements</div>}
                 </div>

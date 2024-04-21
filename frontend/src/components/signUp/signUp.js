@@ -23,12 +23,6 @@ export default function SignUp() {
 
 
         event.preventDefault();
-        console.log({
-            firstName: firstName,
-            lastName: lastName,
-            email: email,
-            password: password,
-        });
 
         const data = {
             firstName: firstName,
@@ -40,11 +34,7 @@ export default function SignUp() {
         try {
             const response = await axios.post('http://localhost:3001/signUp', data);
 
-            console.log('response: '+JSON.stringify(response, null, 2))
-
             if (response.status === 200) {
-                console.log('Registration successful!');
-                console.log('responseData: ' + JSON.stringify(response.data));
 
                 navigate('/signin');
             }
