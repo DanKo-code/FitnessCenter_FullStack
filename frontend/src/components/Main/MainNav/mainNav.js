@@ -6,12 +6,27 @@ import CardMembershipIcon from "@mui/icons-material/CardMembership";
 import GroupsIcon from "@mui/icons-material/Groups";
 import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
-import React from "react";
+import React, {useContext} from "react";
 import {useNavigate} from 'react-router-dom'
+import axios from 'axios';
+import config from "../../../config";
+import inMemoryJWT from "../../../services/inMemoryJWT";
+import showErrorMessage from "../../../utils/showErrorMessage";
+import {AuthContext} from "../../../context/AuthContext";
+
+export const AuthClient = axios.create({
+    baseURL: `${config.API_URL}/auth`,
+    withCredentials: true,
+})
 
 export default function MainNav() {
 
+    const {LogOut} = useContext(AuthContext);
     const navigate = useNavigate();
+
+    const handleLogOut = async () =>{
+        await LogOut();
+    }
 
     return (
         <div style={{width: '30%', height: '100vh', background: 'rgba(160, 147, 197, 1)'}}>
@@ -91,7 +106,7 @@ export default function MainNav() {
                                     justifyContent: 'flex-start', // Выравнивание контента по левому краю
                                     paddingLeft: '25%', // Добавляем отступ слева для текста
                                 }}
-                                onClick={()=>{navigate('/signIn');}}
+                                onClick={handleLogOut}
                                 >
                             Exit
                         </Button>

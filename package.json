@@ -18,13 +18,23 @@
     "url": "https://github.com/DanKo-code/FitnessCenter_FullStack/issues"
   },
   "homepage": "https://github.com/DanKo-code/FitnessCenter_FullStack#readme",
+  "type": "module",
   "dependencies": {
-    "@prisma/client": "^5.11.0",
+    "@prisma/client": "^5.12.1",
     "bcrypt": "^5.1.1",
+    "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
     "express": "^4.19.2",
+    "express-fingerprint": "^1.2.2",
+    "jsonwebtoken": "^9.0.2",
     "nodemon": "^3.1.0",
-    "prisma": "^5.11.0",
-    "uuid": "^9.0.1"
+    "pg": "^8.11.5",
+    "uuid": "^9.0.1",
+    "yup": "^1.4.0"
+  },
+  "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11"
   }
 }

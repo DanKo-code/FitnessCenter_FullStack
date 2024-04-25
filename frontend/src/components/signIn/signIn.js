@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
@@ -8,9 +8,13 @@ import {useDispatch, useSelector} from "react-redux";
 import {setAppState} from '../../states/storeSlice/appStateSlice'
 import {setUser} from '../../states/storeSlice/appStateSlice'
 import { useNavigate, Link } from 'react-router-dom';
+import inMemoryJWT from "../../services/inMemoryJWT";
+import showErrorMessage from "../../utils/showErrorMessage";
+import {AuthContext} from "../../context/AuthContext";
 
 
 export default function SignIn() {
+    const {handleSignIn} = useContext(AuthContext);
     const navigate = useNavigate();
 
     const dispatch = useDispatch();
@@ -29,13 +33,14 @@ export default function SignIn() {
         }
 
         try {
-            const response = await axios.post('http://localhost:3001/signIn', data);
+            const response = await handleSignIn(data);
 
             if (response.status === 200) {
                 dispatch(setUser(response.data));
                 navigate('/main');
             }
         } catch (error) {
+            showErrorMessage(error);
             console.error('response.status: ' + JSON.stringify(error.response.data.message, null, 2))
         }
     };

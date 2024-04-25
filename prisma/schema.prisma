@@ -29,15 +29,16 @@ model AbonementsService {
 }
 
 model Client {
-  Id        String    @id(map: "PK_Clients") @db.UniqueIdentifier
-  FirstName String    @db.NVarChar(Max)
-  LastName  String    @db.NVarChar(Max)
-  Email     String    @db.NVarChar(Max)
-  Role      Int
-  Password  String    @db.NVarChar(Max)
-  Photo     String?   @default("N'", map: "DF__Clients__Photo__625A9A57") @db.NVarChar(Max)
-  Comment   Comment[]
-  Order     Order[]
+  Id               String             @id(map: "PK_Clients") @db.UniqueIdentifier
+  FirstName        String             @db.NVarChar(Max)
+  LastName         String             @db.NVarChar(Max)
+  Email            String             @db.NVarChar(Max)
+  Role             Int
+  Password         String             @db.NVarChar(Max)
+  Photo            String?            @default("N'", map: "DF__Clients__Photo__625A9A57") @db.NVarChar(Max)
+  Comment          Comment[]
+  Order            Order[]
+  refresh_sessions refresh_sessions[]
 }
 
 model Comment {
@@ -83,20 +84,18 @@ model Order {
   @@index([ClientsId], map: "IX_Orders_ClientsId")
 }
 
+model refresh_sessions {
+  id            String @id(map: "PK__refresh___3213E83F1567B902") @db.UniqueIdentifier
+  user_id       String @db.UniqueIdentifier
+  refresh_token String @db.VarChar(400)
+  finger_print  String @db.VarChar(32)
+  Client        Client @relation(fields: [user_id], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK__refresh_s__user___4A8310C6")
+}
+
 model Service {
   Id                String              @id(map: "PK_Services") @db.UniqueIdentifier
   Title             String?             @db.NVarChar(Max)
   Phote             String?             @default("N'", map: "DF__Services__Phote__3B40CD36") @db.NVarChar(Max)
   AbonementsService AbonementsService[]
   CouchesService    CouchesService[]
-}
-
-model sysdiagrams {
-  name         String @db.NVarChar(128)
-  principal_id Int
-  diagram_id   Int    @id(map: "PK__sysdiagr__C2B05B61CFCC380D") @default(autoincrement())
-  version      Int?
-  definition   Bytes?
-
-  @@unique([principal_id, name], map: "UK_principal_name")
 }

@@ -1,16 +1,15 @@
-import React, {useState} from 'react';
+import React, {useState, useContext} from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import axios from 'axios';
-import {useDispatch, useSelector} from "react-redux";
-import {setAppState} from '../../states/storeSlice/appStateSlice'
 import { useNavigate, Link } from 'react-router-dom';
-
-
+import showErrorMessage from "../../utils/showErrorMessage";
+import {AuthContext} from "../../context/AuthContext";
 
 export default function SignUp() {
+
+    const {handleSignUp} = useContext(AuthContext);
 
     const navigate = useNavigate();
 
@@ -32,13 +31,14 @@ export default function SignUp() {
         }
 
         try {
-            const response = await axios.post('http://localhost:3001/signUp', data);
+             const response = await handleSignUp(data);
 
             if (response.status === 200) {
 
                 navigate('/signin');
             }
         } catch (error) {
+            showErrorMessage(error);
             console.error('response.status: ' + JSON.stringify(error.response.data.message, null, 2))
         }
     };

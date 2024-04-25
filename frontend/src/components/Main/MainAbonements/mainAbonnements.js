@@ -11,6 +11,26 @@ import LocalAtmIcon from '@mui/icons-material/LocalAtm';
 
 import sad_doing_abonnements_card from '../../../images/sad_doing_abonnements_card.jpg'
 import AbonnementCard from "./AbonementsCard/abonementCard";
+import showErrorMessage from "../../../utils/showErrorMessage";
+import config from "../../../config";
+import inMemoryJWT from "../../../services/inMemoryJWT";
+
+export const Resource = axios.create({
+    baseURL: `${config.API_URL}/resources`,
+    withCredentials: true,
+})
+
+Resource.interceptors.request.use((config) => {
+    const accessToken = inMemoryJWT.getToken();
+
+    if(accessToken) {
+        config.headers["Authorization"] = `Bearer ${accessToken}`;
+    }
+
+    return config;
+}, (error) => {
+    Promise.reject(error);
+})
 
 export default function MainAbonnements() {
 
@@ -22,12 +42,13 @@ export default function MainAbonnements() {
 
 
     useEffect(() => {
-        axios.get('http://localhost:3001/abonnements')
+        Resource.get('/abonnements')
             .then(response => {
                 setAbonnements(response.data);
                 setSearchedAbonnements(response.data);
             })
             .catch(error => {
+                showErrorMessage(error);
                 console.error('Failed to fetch abonnements:', error);
             });
     }, []);

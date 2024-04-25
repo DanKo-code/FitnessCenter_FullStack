@@ -29,11 +29,6 @@ import {useDispatch, useSelector} from "react-redux";
             }
         }
 
-        useEffect(() => {
-
-            console.log('from props: '+JSON.stringify(abonnement, null,2))
-        }, []);
-
     return (
         <div style={{
             background: 'rgb(160, 147, 197)',

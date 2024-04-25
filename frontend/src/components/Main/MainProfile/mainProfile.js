@@ -34,10 +34,6 @@ export default function MainProfile() {
             axios.post('http://localhost:3001/ordersByUser', user)
                 .then(response => {
 
-                    console.log('response.data!!!!!!!!!!!!!!!!!!!!!!!!!!: ' + JSON.stringify(response.data, null, 2))
-
-                    console.log('just abonnements: ' + JSON.stringify(response.data.map(item => item.Abonement), null, 2));
-
                     setAbonnements(response.data.map(item => item.Abonement))
 
                 })
@@ -48,9 +44,6 @@ export default function MainProfile() {
     }, [user]); // Выполнится только при изменении `user`
 
     useEffect(() => {
-        console.log('After setAbonnements -> abonnements: ' + JSON.stringify(abonnements, null, 2))
-
-
         if (abonnements.length === 0) {
             setShowAbonnementsList(false);
         } else {
