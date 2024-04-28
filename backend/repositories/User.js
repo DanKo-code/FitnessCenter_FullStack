@@ -16,6 +16,22 @@ class UserRepository {
         return client;
     }
 
+    static async updateUser({clientId, firstName, lastName, password}){
+
+        const client = await prismaClient.client.update({
+            where:{
+                Id:  clientId
+            },
+            data:{
+                FirstName: firstName,
+                LastName: lastName,
+                Password: password,
+            }
+        })
+
+        return client;
+    }
+
     static async getUserData(email) {
         const response = await prismaClient.client.findFirst({
             where: {

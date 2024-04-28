@@ -9,7 +9,7 @@ class AuthController {
         const {fingerprint} = req;
 
         try {
-            const {accessToken, refreshToken, accessTokenExpiration} = await AuthService.signIn({
+            const {user, accessToken, refreshToken, accessTokenExpiration} = await AuthService.signIn({
                 email,
                 password,
                 fingerprint,
@@ -17,7 +17,7 @@ class AuthController {
 
             res.cookie("refreshToken", refreshToken, COOKIE_SETTINGS.REFRESH_TOKEN)
 
-            return res.status(200).json({accessToken, accessTokenExpiration});
+            return res.status(200).json({user, accessToken, accessTokenExpiration});
         } catch (err) {
             return ErrorsUtils.catchError(res, err);
         }
@@ -49,8 +49,6 @@ class AuthController {
         try {
             await AuthService.logOut(refreshToken);
 
-            console.log("After logOut: ");
-
             res.clearCookie("refreshToken");
 
             return res.sendStatus(200);
@@ -61,25 +59,18 @@ class AuthController {
 
     static async refresh(req, res) {
 
-        console.log('refresh Start')
-
         const {fingerprint} = req;
         const currentRefreshToken = req.cookies.refreshToken;
 
-        console.log('currentRefreshToken: '+JSON.stringify(currentRefreshToken, null, 2))
-        console.log('fingerprint: '+JSON.stringify(fingerprint, null, 2))
-
         try {
-            const {accessToken, refreshToken, accessTokenExpiration} = await AuthService.refresh({
+            const {user, accessToken, refreshToken, accessTokenExpiration} = await AuthService.refresh({
                 currentRefreshToken,
                 fingerprint,
             });
 
-            console.log('AuthService.refresh')
-
             res.cookie("refreshToken", refreshToken, COOKIE_SETTINGS.REFRESH_TOKEN);
 
-            return res.status(200).json({accessToken, accessTokenExpiration});
+            return res.status(200).json({user, accessToken, accessTokenExpiration});
         } catch (err) {
             return ErrorsUtils.catchError(res, err);
         }

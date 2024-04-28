@@ -6,6 +6,10 @@ import axios from "axios";
 import AbonnementCard from "../MainAbonements/AbonementsCard/abonementCard";
 import {setUser} from "../../../states/storeSlice/appStateSlice";
 import {useDispatch, useSelector} from "react-redux";
+import config from "../../../config";
+import inMemoryJWT from "../../../services/inMemoryJWT";
+import {Resource} from "../../../context/AuthContext";
+
 
 
 export default function MainProfile() {
@@ -31,11 +35,10 @@ export default function MainProfile() {
             setEmail(user.Email);
             setPassword(user.Password);
 
-            axios.post('http://localhost:3001/ordersByUser', user)
+
+            Resource.get('/ordersByUser')
                 .then(response => {
-
                     setAbonnements(response.data.map(item => item.Abonement))
-
                 })
                 .catch(error => {
                     console.error('Failed to fetch abonnements:', error);
@@ -78,7 +81,7 @@ export default function MainProfile() {
         }
 
         try {
-            const response = await axios.post('http://localhost:3001/clients', datae);
+            const response = await Resource.post('/clients', datae);
 
             if (response.status === 200) {
                 dispatch(setUser(response.data));

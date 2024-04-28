@@ -36,7 +36,7 @@ export default function SignIn() {
             const response = await handleSignIn(data);
 
             if (response.status === 200) {
-                dispatch(setUser(response.data));
+                dispatch(setUser(response.data.user));
                 navigate('/main');
             }
         } catch (error) {

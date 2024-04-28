@@ -2,15 +2,37 @@ import {createContext, useState, useEffect} from "react";
 import axios from "axios";
 import config from "../config";
 import inMemoryJWT from "../services/inMemoryJWT";
+import {setUser} from "../states/storeSlice/appStateSlice";
+import {useDispatch} from "react-redux";
 
 export const AuthClient = axios.create({
     baseURL: `${config.API_URL}/auth`,
     withCredentials: true,
 })
 
+export const Resource = axios.create({
+    baseURL: `${config.API_URL}/resources`,
+    withCredentials: true,
+})
+
+Resource.interceptors.request.use((config) => {
+    const accessToken = inMemoryJWT.getToken();
+
+    if(accessToken) {
+        config.headers["Authorization"] = `Bearer ${accessToken}`;
+    }
+
+    return config;
+}, (error) => {
+    Promise.reject(error);
+})
+
 export const AuthContext = createContext({});
 
 const AuthProvider = ({children}) => {
+
+    const dispatch = useDispatch();
+
     const [isAppReady, setIsAppReady] = useState(false);
     const [isUserLogged, setIsUserLogged] = useState(false);
     const [data, setData] = useState();
@@ -18,7 +40,6 @@ const AuthProvider = ({children}) => {
     const LogOut = () => {
         AuthClient.post("/logout")
             .then(()=>{
-                console.log('handleLogOut true')
                 inMemoryJWT.deleteToken();
                 setIsUserLogged(false);
             })
@@ -46,11 +67,10 @@ const AuthProvider = ({children}) => {
     useEffect(() => {
         AuthClient.post("/refresh")
             .then((res) =>{
-
-                console.log('enter true')
                 const{accessToken, accessTokenExpiration} = res.data;
                 inMemoryJWT.setToken(accessToken, accessTokenExpiration);
 
+                dispatch(setUser(res.data.user));
                 setIsAppReady(true);
                 setIsUserLogged(true);
             })

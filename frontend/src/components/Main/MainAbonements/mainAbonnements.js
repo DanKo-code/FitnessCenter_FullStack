@@ -14,23 +14,9 @@ import AbonnementCard from "./AbonementsCard/abonementCard";
 import showErrorMessage from "../../../utils/showErrorMessage";
 import config from "../../../config";
 import inMemoryJWT from "../../../services/inMemoryJWT";
+import {Resource} from "../../../context/AuthContext";
 
-export const Resource = axios.create({
-    baseURL: `${config.API_URL}/resources`,
-    withCredentials: true,
-})
 
-Resource.interceptors.request.use((config) => {
-    const accessToken = inMemoryJWT.getToken();
-
-    if(accessToken) {
-        config.headers["Authorization"] = `Bearer ${accessToken}`;
-    }
-
-    return config;
-}, (error) => {
-    Promise.reject(error);
-})
 
 export default function MainAbonnements() {
 
@@ -42,6 +28,7 @@ export default function MainAbonnements() {
 
 
     useEffect(() => {
+
         Resource.get('/abonnements')
             .then(response => {
                 setAbonnements(response.data);

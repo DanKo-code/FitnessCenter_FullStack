@@ -6,28 +6,31 @@ import Button from "@mui/material/Button";
 import React, {useEffect} from "react";
 import axios from 'axios';
 import {useDispatch, useSelector} from "react-redux";
+import config from "../../../../config";
+import inMemoryJWT from "../../../../services/inMemoryJWT";
+import {Resource} from "../../../../context/AuthContext";
 
 
-    export default function AbonnementCard(props) {
 
-        const dispatch = useDispatch();
-        let user = useSelector((state) => state.userSliceMode.user);
+export default function AbonnementCard(props) {
 
-        const { abonnement, width, height, buyButton } = props;
+    const dispatch = useDispatch();
+    let user = useSelector((state) => state.userSliceMode.user);
 
-        const handleBuy = async (event) => {
-            try{
+    const {abonnement, width, height, buyButton} = props;
 
-                const data = {
-                    user: user,
-                    abonnement: abonnement
-                }
+    const handleBuy = async (event) => {
+        try {
 
-                const response = await axios.post('http://localhost:3001/orders', data);
-            }catch (e){
-                console.error('response.status: ' + JSON.stringify(e.response.data.message, null, 2))
+            const data = {
+                abonnement: abonnement
             }
+
+            const response = await Resource.post('/orders', data);
+        } catch (e) {
+            console.error('response.status: ' + JSON.stringify(e.response.data.message, null, 2))
         }
+    }
 
     return (
         <div style={{
@@ -127,7 +130,7 @@ import {useDispatch, useSelector} from "react-redux";
                     onClick={handleBuy}
                 >
                     Buy
-                </Button>: <div/>}
+                </Button> : <div/>}
 
             </div>
         </div>

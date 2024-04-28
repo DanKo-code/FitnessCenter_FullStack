@@ -43,8 +43,6 @@ export class BadRequest extends WebError {
 
 class ErrorUtils {
   static catchError(res, error) {
-    //console.log(error);
-    //console.log('here');
     return res.status(error.status || 500).json(error);
   }
 }

@@ -11,8 +11,6 @@ class AuthService {
     static async signIn({email, password, fingerprint}) {
         const user = await UserRepository.getUserData(email);
 
-        console.log('getUserData -> signIn: '+JSON.stringify(user, null, 2))
-
 
         if (!user) {
             throw new Conflict('User not found');
@@ -27,8 +25,6 @@ class AuthService {
 
         const payload = {id: user.Id, email: user.Email, password: user.Password}
 
-        console.log('payload -> signIn: '+JSON.stringify(payload, null, 2))
-
         const accessToken = await TokenService.generateAccessToken(payload)
         const refreshToken = await TokenService.generateRefreshToken(payload)
 
@@ -41,6 +37,7 @@ class AuthService {
         });
 
         return {
+            user,
             accessToken,
             refreshToken,
             accessTokenExpiration: ACCESS_TOKEN_EXPIRATION,
@@ -62,8 +59,6 @@ class AuthService {
         const client = await UserRepository.createUser({clientId, firstName, lastName, email, hashedPassword, role});
 
         const payload = {clientId, email, password}
-
-        console.log('payload -> signUp: '+JSON.stringify(payload, null, 2))
 
         const accessToken = await TokenService.generateAccessToken(payload)
         const refreshToken = await TokenService.generateRefreshToken(payload)
@@ -96,14 +91,11 @@ class AuthService {
             currentRefreshToken
         );
 
-        console.log('refreshSession: '+JSON.stringify(refreshSession, null, 2))
-
         if (!refreshSession) {
             throw new Unauthorized();
         }
 
         if (refreshSession.finger_print !== fingerprint.hash) {
-            console.log("Unauthorized token renewal attempt!");
             throw new Forbidden();
         }
 
@@ -113,36 +105,39 @@ class AuthService {
         try {
             payload = await TokenService.verifyRefreshToken(currentRefreshToken);
 
-            console.log('verifyRefreshToken.payload: '+JSON.stringify(payload, null, 2))
         } catch (error) {
             throw new Forbidden(error);
         }
 
+        //not need
         const {Id, Email, Password} = await UserRepository.getUserData(payload.email);
+        const user = await UserRepository.getUserData(payload.email);
 
         const actualPayload = {id: Id, email: Email, password: Password};
-
-        console.log('actualPayload -> refresh: '+JSON.stringify(actualPayload, null, 2))
 
         const accessToken = await TokenService.generateAccessToken(actualPayload);
         const refreshToken = await TokenService.generateRefreshToken(actualPayload);
 
         const refreshSessionId = uuidv4();
-        console.log('before RefreshSessionsRepository.createRefreshSession: ');
-        console.log('refreshSessionId: '+refreshSessionId);
-        console.log('Id: '+Id);
-        console.log('refreshToken: '+refreshToken);
-        console.log('fingerprint.hash: '+fingerprint.hash);
 
         const rs_res = await RefreshSessionsRepository.createRefreshSession({
             refreshSessionId, clientId: Id, refreshToken, fingerprint
         });
 
         return {
+            user,
             accessToken,
             refreshToken,
             accessTokenExpiration: ACCESS_TOKEN_EXPIRATION,
         };
+    }
+
+    static async getUserByToken(req){
+        const authHeader = req.headers.authorization;
+        const token = authHeader?.split(" ")?.[1];
+        const user = await TokenService.verifyAccessToken(token);
+
+        return user;
     }
 }
 
