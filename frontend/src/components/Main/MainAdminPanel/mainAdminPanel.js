@@ -117,7 +117,7 @@ export default function MainAdminPanel() {
 
         console.log('handleServicesChange-> currentServices: '+JSON.stringify(currentServices, null, 2))
 
-        if(currentServices.map(serviceObg => serviceObg.ServicesId).includes(service.Id)){
+        if(currentServices.map(serviceObg => serviceObg.Id).includes(service.Id)){
             const updatedServices = currentServices.filter(serviceObj => serviceObj.Id !== service.Id);
             setCurrentServices(updatedServices);
         }
@@ -125,6 +125,10 @@ export default function MainAdminPanel() {
             setCurrentServices([service, ...currentServices]);
         }
     }
+
+    useEffect(() => {
+        console.log('currentServices have been changed: '+JSON.stringify(currentServices, null, 2))
+    }, [currentServices])
 
     const handleVisitingTimeChange = async (event) => {
         setVisitingTime(event.target.value);
@@ -137,7 +141,7 @@ export default function MainAdminPanel() {
             setValidityPeriod(currentAbonnement.Validity);
             setVisitingTime(currentAbonnement.VisitingTime);
             setPrice(currentAbonnement.Price);
-            setCurrentServices(currentAbonnement.AbonementService);
+            setCurrentServices(currentAbonnement.AbonementService.map(as => as.Service));
         }
         else{
             setTitle('');
@@ -169,7 +173,7 @@ export default function MainAdminPanel() {
                 setValidityPeriod(response.data.Validity);
                 setVisitingTime(response.data.VisitingTime);
                 setPrice(response.data.Price);
-                setCurrentServices(response.data.AbonementService);
+                setCurrentServices(currentAbonnement.AbonementService.map(as => as.Service));
 
                 const newArray = abonnements.map(abonement => {
                     if (abonement.Id === response.data.Id) {
@@ -309,12 +313,12 @@ export default function MainAdminPanel() {
                                     multiple
                                     value={currentServices}
                                     input={<OutlinedInput label="Tag" />}
-                                    renderValue={(selected) => selected.map(sel => sel.Service.Title + ' ')}
+                                    renderValue={(selected) => selected.map(sel => sel.Title + ' ')}
                                     MenuProps={MenuProps}
                                 >
                                     {allServices.map((service) => (
                                         <MenuItem key={service.Id} value={service.Title}>
-                                            <Checkbox onChange={() => handleServicesChange(service)} checked={currentServices.map(ser => ser.Service.Id).includes(service.Id)} />
+                                            <Checkbox onChange={() => handleServicesChange(service)} checked={currentServices.map(ser => ser.Id).includes(service.Id)} />
                                             <ListItemText primary={service.Title} />
                                         </MenuItem>
                                     ))}
