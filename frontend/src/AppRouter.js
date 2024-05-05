@@ -4,9 +4,13 @@ import SignIn from './components/signIn/signIn';
 import MainNavHome from './components/MainNavHome/MainNavHome'
 import SignUp from "./components/signUp/signUp";
 import MainNavAbonnements from './components/MainNavAbonnements/MainNavAbonnements';
+import MainNavCoaches from './components/MainNavCoaches/MainNavCoaches';
 import MainNavProfile from "./components/MainNavProfile/MainNavProfile";
 import {useContext} from "react";
 import {AuthContext} from "./context/AuthContext";
+import CoachDetailsCard from "./components/Main/MainCoaches/CoachesDetailedCard/coachDetailCard";
+import MainNavCoachDetailCard from "./components/MainNavAbonementDetail/MainNavAbonementDetail";
+import MainNavAdminPanel from "./components/AdminPanel/AdminPanel";
 
 export function AppRouter() {
     const {isUserLogged} = useContext(AuthContext);
@@ -38,6 +42,21 @@ export function AppRouter() {
                     <Route
                         path='/main/profile'
                         element={<MainNavProfile/>}
+                    />
+
+                    <Route
+                        path='/main/coaches'
+                        element={<MainNavCoaches/>}
+                    />
+
+                    <Route
+                        path='/main/coaches/details'
+                        element={<MainNavCoachDetailCard/>}
+                    />
+
+                    <Route
+                        path='/adminPanel'
+                        element={<MainNavAdminPanel/>}
                     />
                 </>
             )}

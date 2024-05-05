@@ -84,7 +84,10 @@ export default function MainNav() {
                                 sx={{
                                     justifyContent: 'flex-start', // Выравнивание контента по левому краю
                                     paddingLeft: '25%', // Добавляем отступ слева для текста
-                                }}>
+                                }}
+
+                                onClick={()=>{navigate('/main/coaches')}}
+                                >
                             Couches
                         </Button>
 
@@ -98,6 +101,12 @@ export default function MainNav() {
                                 onClick={()=>{navigate('/main/profile')}}>
 
                             Edit Profile
+                        </Button>
+
+                        <Button style={{color: 'white', background: 'rgba(117,100,163,255)', marginTop: '5%'}}
+                                onClick={()=>{navigate('/adminPanel')}}>
+
+                            Admin panel
                         </Button>
 
                         <Button style={{color: 'white', background: 'rgba(117,100,163,255)', marginTop: '50%'}}

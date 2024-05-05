@@ -9,7 +9,7 @@ class OrderRepository {
             include: {
                 Abonement: {
                     include: {
-                        AbonementsService:{
+                        AbonementService:{
                             include: {
                                 Service: true
                             }

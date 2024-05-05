@@ -112,7 +112,8 @@ export default function MainAbonnements() {
                         {searchedAbonnements.map(abonnement => (
                             <AbonnementCard abonnement={abonnement} width={'600px'} height={'400px'} buyButton={{buttonState:true}}/>
                         ))}
-                    </div> : <div>There are no such abonnements</div>}
+                    </div> : <div>There are no such abonnements</div>
+                    }
                 </div>
             </div>
         </div>

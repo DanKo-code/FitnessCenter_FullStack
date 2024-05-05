@@ -1,0 +1,2 @@
+--INSERT INTO (id, Title, Validity, VisitingTime, Photo, Price)
+--VALUES (NEWID(), 'Vip', '6', 'пн-вс', '*', 100),

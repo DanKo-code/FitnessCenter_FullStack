@@ -8,17 +8,17 @@ datasource db {
 }
 
 model Abonement {
-  Id                String              @id(map: "PK_Abonements") @db.UniqueIdentifier
-  Title             String?             @db.NVarChar(Max)
-  Validity          String?             @db.NVarChar(Max)
-  VisitingTime      String?             @db.NVarChar(Max)
-  Photo             String?             @db.NVarChar(Max)
-  Price             Int?
-  AbonementsService AbonementsService[]
-  Order             Order[]
+  Id               String             @id(map: "PK_Abonements") @db.UniqueIdentifier
+  Title            String?            @db.NVarChar(Max)
+  Validity         String?            @db.NVarChar(Max)
+  VisitingTime     String?            @db.NVarChar(Max)
+  Photo            String?            @db.NVarChar(Max)
+  Price            Int?
+  AbonementService AbonementService[]
+  Order            Order[]
 }
 
-model AbonementsService {
+model AbonementService {
   AbonementsId String    @db.UniqueIdentifier
   ServicesId   String    @db.UniqueIdentifier
   Abonement    Abonement @relation(fields: [AbonementsId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_AbonementsServices_Abonements_AbonementsId")
@@ -41,35 +41,35 @@ model Client {
   refresh_sessions refresh_sessions[]
 }
 
+model Coach {
+  Id           String         @id(map: "PK_Couches") @db.UniqueIdentifier
+  Name         String         @db.NVarChar(Max)
+  Description  String         @db.NVarChar(Max)
+  Photo        String         @default("N'", map: "DF__Couches__Photo__59FA5E80") @db.NVarChar(Max)
+  CoachService CoachService[]
+  Comment      Comment[]
+}
+
+model CoachService {
+  CouchesId  String  @db.UniqueIdentifier
+  ServicesId String  @db.UniqueIdentifier
+  Coach      Coach   @relation(fields: [CouchesId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_CouchesServices_Couches_CouchesId")
+  Service    Service @relation(fields: [ServicesId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_CouchesServices_Services_ServicesId")
+
+  @@id([CouchesId, ServicesId], map: "PK_CouchesServices")
+  @@index([ServicesId], map: "IX_CouchesServices_ServicesId")
+}
+
 model Comment {
   Id          String @id(map: "PK_Comments") @db.UniqueIdentifier
   CommentBody String @db.NVarChar(Max)
   ClientsId   String @db.UniqueIdentifier
   CouchesId   String @db.UniqueIdentifier
   Client      Client @relation(fields: [ClientsId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Comments_Clients_ClientsId")
-  Couche      Couche @relation(fields: [CouchesId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Comments_Couches_CouchesId")
+  Coach       Coach  @relation(fields: [CouchesId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Comments_Couches_CouchesId")
 
   @@index([ClientsId], map: "IX_Comments_ClientsId")
   @@index([CouchesId], map: "IX_Comments_CouchesId")
-}
-
-model Couche {
-  Id             String           @id(map: "PK_Couches") @db.UniqueIdentifier
-  Name           String           @db.NVarChar(Max)
-  Description    String           @db.NVarChar(Max)
-  Photo          String           @default("N'", map: "DF__Couches__Photo__59FA5E80") @db.NVarChar(Max)
-  Comment        Comment[]
-  CouchesService CouchesService[]
-}
-
-model CouchesService {
-  CouchesId  String  @db.UniqueIdentifier
-  ServicesId String  @db.UniqueIdentifier
-  Couche     Couche  @relation(fields: [CouchesId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_CouchesServices_Couches_CouchesId")
-  Service    Service @relation(fields: [ServicesId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_CouchesServices_Services_ServicesId")
-
-  @@id([CouchesId, ServicesId], map: "PK_CouchesServices")
-  @@index([ServicesId], map: "IX_CouchesServices_ServicesId")
 }
 
 model Order {
@@ -93,9 +93,9 @@ model refresh_sessions {
 }
 
 model Service {
-  Id                String              @id(map: "PK_Services") @db.UniqueIdentifier
-  Title             String?             @db.NVarChar(Max)
-  Phote             String?             @default("N'", map: "DF__Services__Phote__3B40CD36") @db.NVarChar(Max)
-  AbonementsService AbonementsService[]
-  CouchesService    CouchesService[]
+  Id               String             @id(map: "PK_Services") @db.UniqueIdentifier
+  Title            String?            @db.NVarChar(Max)
+  Phote            String?            @default("N'", map: "DF__Services__Phote__3B40CD36") @db.NVarChar(Max)
+  AbonementService AbonementService[]
+  CoachService     CoachService[]
 }

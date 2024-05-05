@@ -1,6 +1,10 @@
-INSERT INTO Abonement(id, Title, Validity, VisitingTime, Photo, Price)
-VALUES (NEWID(), 'Vip', '6', 'пн-вс', '*', 100),
-		(NEWID(), 'Standard', '3', 'пн-пт', 'фото1', 50),
-		(NEWID(), 'Premium', '12', 'ежедневно', 'фото2', 150);
+INSERT INTO Comment(Id, [CommentBody], [ClientsId], [CouchesId])
+VALUES (NEWID(), 'Тренер с огромным опытом и знаниями. Он объясняет каждое упражнение подробно и понятно, что делает занятия эффективными и интересными. Очень рекомендую его услуги!', 'FFEA5E3C-1B6A-4E1B-8EE8-192DC2337CAC', '6421F54C-7A66-4DAE-869D-22570006FD46'),
+		(NEWID(), 'Отличный опыт тренировок с этим тренером. Он прекрасно адаптирует программу под индивидуальные потребности и помогает добиться поставленных целей. Рекомендую!', 'FFEA5E3C-1B6A-4E1B-8EE8-192DC2337CAC', '6421F54C-7A66-4DAE-869D-22570006FD46'),
+		(NEWID(), 'Невероятно энергичный и вдохновляющий тренер! Тренировки с ним – это настоящий вызов для тела и духа. Благодаря его поддержке, я чувствую себя сильнее и более уверенно.', 'FFEA5E3C-1B6A-4E1B-8EE8-192DC2337CAC', '6421F54C-7A66-4DAE-869D-22570006FD46');
 
-delete from Abonement;
+delete from Comment;
+
+select * from Client;
+select * from Coach;
+select * from Comment;

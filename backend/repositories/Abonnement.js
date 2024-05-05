@@ -4,7 +4,7 @@ class AbonnementRepository {
     static async getAllAbonnements() {
         const abonnements = await prismaClient.abonement.findMany({
             include: {
-                AbonementsService: {
+                AbonementService: {
                     include: {
                         Service: true
                     }
