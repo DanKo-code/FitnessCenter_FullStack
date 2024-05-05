@@ -81,7 +81,7 @@ export default function MainProfile() {
         }
 
         try {
-            const response = await Resource.post('/clients', datae);
+            const response = await Resource.put('/clients', datae);
 
             if (response.status === 200) {
                 dispatch(setUser(response.data));

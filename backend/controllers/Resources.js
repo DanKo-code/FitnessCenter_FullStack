@@ -17,8 +17,6 @@ class ResourcesController {
         try{
             const abonnements = await ResourcesService.getAllAbonnements();
 
-            console.log('abonnements: '+JSON.stringify(abonnements, null, 2));
-
             res.status(200).json(abonnements);
         }
         catch(err) {
@@ -75,15 +73,34 @@ class ResourcesController {
 
             res.status(200).json(client)
         }catch (e){
+
+            console.log('err: '+JSON.stringify(e, null, 2))
+
             res.status(400).json({message: 'Client hasn\'t been updated'})
+        }
+    }
+
+    static async updateAbonement(req, res){
+        try{
+            const abonementId = req.body.id;
+            const title = req.body.title;
+            const validityPeriod = req.body.validityPeriod;
+            const visitingTime = req.body.visitingTime;
+            const price = req.body.price;
+            const services = req.body.services;
+
+            const abonement =
+                await AbonnementRepository.updateAbonement({abonementId, title, validityPeriod, visitingTime, price, services});
+
+            res.status(200).json(abonement);
+        }catch (e){
+            res.status(400).json({message: 'Abonement hasn\'t been updated'})
         }
     }
 
     static async coaches(req, res){
         try{
             const coaches = await CoachRepository.getAllCoaches();
-
-            console.log('coaches: '+JSON.stringify(coaches, null, 2))
 
             res.status(200).json(coaches)
         }catch (e){
@@ -94,8 +111,6 @@ class ResourcesController {
     static async services(req, res){
         try{
             const services = await ServiceRepository.getAllServices();
-
-            console.log('coaches: '+JSON.stringify(services, null, 2))
 
             res.status(200).json(services)
         }catch (e){
@@ -130,6 +145,8 @@ class ResourcesController {
             res.status(400).json({message: 'Orders can\'t be retrieved'})
         }
     }
+
+
 }
 
 export default ResourcesController;

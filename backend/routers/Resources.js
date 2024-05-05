@@ -9,9 +9,10 @@ const router = Router();
 router.get("/abonnements", TokenService.checkAccess, ResourcesController.abonnements);
 router.get("/ordersByUser", TokenService.checkAccess, ResourcesController.ordersByUser);
 router.post("/orders", TokenService.checkAccess, ResourcesController.createOrder);
-router.post("/clients", TokenService.checkAccess, ResourcesController.updateClient);
+router.put("/clients", TokenService.checkAccess, ResourcesController.updateClient);
 router.get  ("/coaches", TokenService.checkAccess, ResourcesController.coaches);
 router.post  ("/comments", TokenService.checkAccess, ResourcesController.createComment);
 router.get  ("/services", TokenService.checkAccess, ResourcesController.services);
+router.put  ("/abonnements", TokenService.checkAccess, ResourcesController.updateAbonement);
 
 export default router

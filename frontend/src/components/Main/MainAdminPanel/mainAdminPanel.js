@@ -25,6 +25,7 @@ import showErrorMessage from "../../../utils/showErrorMessage";
 import sad_doing_abonnements_card from "../../../images/sad_doing_abonnements_card.jpg";
 import TextField from "@mui/material/TextField";
 import {Checkbox} from "@mui/joy";
+import {setUser} from "../../../states/storeSlice/appStateSlice";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -85,6 +86,7 @@ export default function MainAdminPanel() {
 
     const [title, setTitle] = useState('');
     const [validityPeriod, setValidityPeriod] = useState('');
+    const [visitingTime, setVisitingTime] = useState('');
     const [price, setPrice] = useState('');
     const [currentServices, setCurrentServices] = useState([]);
     const [allServices, setAllServices] = useState([]);
@@ -110,9 +112,22 @@ export default function MainAdminPanel() {
         setPrice(truncatedInput);
     }
 
-    const handleServicesChange = async (event) => {
-        console.log('handleServicesChange->event.target.value: '+JSON.stringify(event.target.value, null, 2))
-        setCurrentServices(event.target.value);
+    const handleServicesChange = async (service) => {
+        console.log('handleServicesChange-> service: '+JSON.stringify(service, null, 2))
+
+        console.log('handleServicesChange-> currentServices: '+JSON.stringify(currentServices, null, 2))
+
+        if(currentServices.map(serviceObg => serviceObg.ServicesId).includes(service.Id)){
+            const updatedServices = currentServices.filter(serviceObj => serviceObj.Id !== service.Id);
+            setCurrentServices(updatedServices);
+        }
+        else{
+            setCurrentServices([service, ...currentServices]);
+        }
+    }
+
+    const handleVisitingTimeChange = async (event) => {
+        setVisitingTime(event.target.value);
     }
 
     useEffect(() => {
@@ -120,17 +135,55 @@ export default function MainAdminPanel() {
         if(currentAbonnement){
             setTitle(currentAbonnement.Title);
             setValidityPeriod(currentAbonnement.Validity);
+            setVisitingTime(currentAbonnement.VisitingTime);
             setPrice(currentAbonnement.Price);
             setCurrentServices(currentAbonnement.AbonementService);
         }
         else{
             setTitle('');
             setValidityPeriod('');
+            setVisitingTime('');
             setPrice('');
             setCurrentServices([]);
         }
 
     }, [currentAbonnement]);
+
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+
+        const data = {
+            id: currentAbonnement.Id,
+            title: title,
+            validityPeriod: validityPeriod,
+            visitingTime: visitingTime,
+            price: price,
+            services: currentServices
+        }
+
+        try {
+            const response = await Resource.put('/abonnements', data);
+
+            if (response.status === 200) {
+                setTitle(response.data.Title);
+                setValidityPeriod(response.data.Validity);
+                setVisitingTime(response.data.VisitingTime);
+                setPrice(response.data.Price);
+                setCurrentServices(response.data.AbonementService);
+
+                const newArray = abonnements.map(abonement => {
+                    if (abonement.Id === response.data.Id) {
+                        return response.data;
+                    }
+                    return abonement;
+                });
+
+                setAbonnements(newArray);
+            }
+        } catch (error) {
+            console.error('response.status: ' + JSON.stringify(error.response.data.message, null, 2))
+        }
+    }
 
     return (
         <div style={{width: '70%', height: '100vh', background: 'rgba(117,100,163,255)'}}>
@@ -218,10 +271,23 @@ export default function MainAdminPanel() {
                                     label="Validity Period"
                                     onChange={handleValidityPeriodChange}
                                 >
-                                    <MenuItem value={1}>1</MenuItem>
-                                    <MenuItem value={3}>3</MenuItem>
-                                    <MenuItem value={6}>6</MenuItem>
-                                    <MenuItem value={12}>12</MenuItem>
+                                    <MenuItem value={'1'}>1</MenuItem>
+                                    <MenuItem value={'3'}>3</MenuItem>
+                                    <MenuItem value={'6'}>6</MenuItem>
+                                    <MenuItem value={'12'}>12</MenuItem>
+                                </Select>
+                            </FormControl>
+
+                            <FormControl fullWidth style={{marginBottom: '10px'}}>
+                                <InputLabel>Visiting Time</InputLabel>
+                                <Select
+                                    value={visitingTime}
+                                    label="Visiting Time"
+                                    onChange={handleVisitingTimeChange}
+                                >
+                                    <MenuItem value={'7.00 - 14.00'}>7.00 - 14.00</MenuItem>
+                                    <MenuItem value={'14.00 - 24.00'}>14.00 - 24.00</MenuItem>
+                                    <MenuItem value={'Any Time'}>Any Time</MenuItem>
                                 </Select>
                             </FormControl>
 
@@ -242,14 +308,13 @@ export default function MainAdminPanel() {
                                     fullWidth
                                     multiple
                                     value={currentServices}
-                                    onChange={handleServicesChange}
                                     input={<OutlinedInput label="Tag" />}
                                     renderValue={(selected) => selected.map(sel => sel.Service.Title + ' ')}
                                     MenuProps={MenuProps}
                                 >
                                     {allServices.map((service) => (
                                         <MenuItem key={service.Id} value={service.Title}>
-                                            <Checkbox checked={currentServices.map(ser => ser.Service.Id).includes(service.Id)} />
+                                            <Checkbox onChange={() => handleServicesChange(service)} checked={currentServices.map(ser => ser.Service.Id).includes(service.Id)} />
                                             <ListItemText primary={service.Title} />
                                         </MenuItem>
                                     ))}
@@ -268,9 +333,7 @@ export default function MainAdminPanel() {
                                         width: '80%'
                                     }}
 
-                                    /*
-                                                                    onClick={handleSubmit}
-                                    */
+                                    onClick={handleSubmit}
                                 >
                                     Submit
                                 </Button>
