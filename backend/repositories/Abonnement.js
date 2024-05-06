@@ -26,7 +26,6 @@ class AbonnementRepository {
         return abonnement
     }
 
-    //id, title, validityPeriod, visitingTime, price, services
     static async updateAbonement({abonementId, title, validityPeriod, visitingTime, price, services}) {
 
         try{
@@ -41,9 +40,6 @@ class AbonnementRepository {
             const servicesToAdd = newServiceIds.filter(id => !oldServices.includes(id));
             oldServices.push(...servicesToAdd);
             const servicesToRemove = oldServices.filter(id => !newServiceIds.includes(id))
-
-            console.log('servicesToAdd: '+JSON.stringify(servicesToAdd, null, 2))
-            console.log('servicesToRemove: '+JSON.stringify(servicesToRemove, null, 2))
 
             if(servicesToAdd.length > 0){
 
@@ -63,16 +59,12 @@ class AbonnementRepository {
                     ServicesId: serviceId
                 }));
 
-                console.log('before deletedServices')
                 let deletedServices = await prismaClient.abonementService.deleteMany({
                     where:{
                         AbonementsId: abonementId,
                         ServicesId: {in: servicesToRemove}
                     }
                 })
-                console.log('after deletedServices')
-
-                console.log('deletedServices: '+JSON.stringify(deletedServices, null, 2))
             }
 
             await prismaClient.abonement.update({
@@ -100,11 +92,58 @@ class AbonnementRepository {
                 }
             })
 
-            console.log('reterned abonement: '+JSON.stringify(abonement, null, 2))
             return abonement;
         }catch (e){
             console.log('e: '+JSON.stringify(e, null, 2))
         }
+    }
+
+    static async createAbonement({abonementId, title, validityPeriod, visitingTime, price, services}) {
+
+        const newAbonementServices = services.map(item => { return {
+            AbonementsId: abonementId,
+            ServicesId: item.Id
+        }})
+
+        const abonement = await prismaClient.abonement.create({
+            data: {
+                Id: abonementId,
+                Title: title,
+                Validity: validityPeriod,
+                VisitingTime: visitingTime,
+                Price: Number(price)
+            }
+        })
+
+        await prismaClient.abonementService.createMany({
+            data: newAbonementServices
+        })
+
+        const abonementToReturn = await prismaClient.abonement.findFirst({
+            where:{
+                Id: abonementId
+            },
+            include: {
+                AbonementService: {
+                    include: {
+                        Service: true
+                    }
+                }
+            }
+        })
+
+        return abonementToReturn;
+    }
+
+    static async deleteAbonement(abonementId) {
+
+        const deletedAbonement = await prismaClient.abonement.delete({
+            where: {
+                Id: abonementId
+            }
+        })
+
+        return deletedAbonement;
     }
 }
 

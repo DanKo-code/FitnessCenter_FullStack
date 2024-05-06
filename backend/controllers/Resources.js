@@ -130,19 +130,42 @@ class ResourcesController {
             const commentId = uuidv4();
             const comment = await CommentRepository.createComment({commentId, commentBody: req.body.reviewText , clientId: user.id, coachId: req.body.coach.Id});
 
-            /*if (!abonnement) {
-                return res.status(404).json({ message: 'Abonnement not exists' });
-            }
 
-            const orderId = uuidv4();
-            const abonementId = abonnement.Id;
-            const clientId = user.id;
-            const order = OrderRepository.createOrder({orderId, abonementId, clientId})
-
-*/
             res.status(200).json(comment)
         }catch (e){
             res.status(400).json({message: 'Orders can\'t be retrieved'})
+        }
+    }
+
+    static async createAbonement(req, res){
+        try{
+            const abonementId = uuidv4();
+            const title = req.body.title;
+            const validityPeriod = req.body.validityPeriod;
+            const visitingTime = req.body.visitingTime;
+            const price = req.body.price;
+            const services = req.body.services;
+
+            const abonement =
+                await AbonnementRepository.createAbonement({abonementId, title, validityPeriod, visitingTime, price, services});
+
+            res.status(200).json(abonement);
+        }catch (e){
+            res.status(400).json({message: 'Abonement can\'t be created'})
+        }
+
+    }
+
+    static async deleteAbonement(req, res){
+        try{
+            const abonementId = req.params.abonementId;
+
+            const abonement =
+                await AbonnementRepository.deleteAbonement(abonementId);
+
+            res.status(200).json(abonement);
+        }catch (e){
+            res.status(400).json({message: 'Abonement can\'t be deleted'})
         }
     }
 

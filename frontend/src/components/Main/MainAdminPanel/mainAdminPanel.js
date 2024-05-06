@@ -69,6 +69,13 @@ export default function MainAdminPanel() {
             });
     }
     const handleCloseAbonnementsModal = () => {
+        setTitle('');
+        setValidityPeriod('');
+        setVisitingTime('');
+        setPrice('');
+        setCurrentServices([]);
+        setCurrentAbonnement('');
+
         setOpenAbonnementsModal(false);
     };
 
@@ -81,7 +88,13 @@ export default function MainAdminPanel() {
     }
 
     const handleAbonementSelection = async (selectedAbonnement) => {
-        setCurrentAbonnement(selectedAbonnement);
+
+        if(currentAbonnement.Id === selectedAbonnement.Id){
+            setCurrentAbonnement('');
+        }
+        else{
+            setCurrentAbonnement(selectedAbonnement);
+        }
     }
 
     const [title, setTitle] = useState('');
@@ -113,10 +126,6 @@ export default function MainAdminPanel() {
     }
 
     const handleServicesChange = async (service) => {
-        console.log('handleServicesChange-> service: '+JSON.stringify(service, null, 2))
-
-        console.log('handleServicesChange-> currentServices: '+JSON.stringify(currentServices, null, 2))
-
         if(currentServices.map(serviceObg => serviceObg.Id).includes(service.Id)){
             const updatedServices = currentServices.filter(serviceObj => serviceObj.Id !== service.Id);
             setCurrentServices(updatedServices);
@@ -125,10 +134,6 @@ export default function MainAdminPanel() {
             setCurrentServices([service, ...currentServices]);
         }
     }
-
-    useEffect(() => {
-        console.log('currentServices have been changed: '+JSON.stringify(currentServices, null, 2))
-    }, [currentServices])
 
     const handleVisitingTimeChange = async (event) => {
         setVisitingTime(event.target.value);
@@ -153,6 +158,27 @@ export default function MainAdminPanel() {
 
     }, [currentAbonnement]);
 
+    const handleDelete = async (event) => {
+        event.preventDefault();
+
+        const abonementId = currentAbonnement.Id;
+
+        const url = `/abonnements/${abonementId}`;
+
+        try{
+            if(currentAbonnement){
+                const response = await Resource.delete(url);
+
+                if(response.status === 200){
+                    setAbonnements(abonnements.filter(item => item.Id !== response.data.Id))
+                }
+
+            }
+        }catch (error){
+            console.error('response.status: ' + JSON.stringify(error.response.data.message, null, 2))
+        }
+    }
+
     const handleSubmit = async (event) => {
         event.preventDefault();
 
@@ -166,24 +192,43 @@ export default function MainAdminPanel() {
         }
 
         try {
-            const response = await Resource.put('/abonnements', data);
 
-            if (response.status === 200) {
-                setTitle(response.data.Title);
-                setValidityPeriod(response.data.Validity);
-                setVisitingTime(response.data.VisitingTime);
-                setPrice(response.data.Price);
-                setCurrentServices(currentAbonnement.AbonementService.map(as => as.Service));
+            if(currentAbonnement){
+                const response = await Resource.put('/abonnements', data);
 
-                const newArray = abonnements.map(abonement => {
-                    if (abonement.Id === response.data.Id) {
-                        return response.data;
-                    }
-                    return abonement;
-                });
+                if (response.status === 200) {
+                    setTitle(response.data.Title);
+                    setValidityPeriod(response.data.Validity);
+                    setVisitingTime(response.data.VisitingTime);
+                    setPrice(response.data.Price);
+                    setCurrentServices(response.data.AbonementService.map(as => as.Service));
 
-                setAbonnements(newArray);
+                    const newArray = abonnements.map(abonement => {
+                        if (abonement.Id === response.data.Id) {
+                            return response.data;
+                        }
+                        return abonement;
+                    });
+
+                    setAbonnements(newArray);
+                }
             }
+            else{
+                const response = await Resource.post('/abonnements', data);
+
+                if (response.status === 200) {
+                    
+                    setTitle(response.data.Title);
+                    setValidityPeriod(response.data.Validity);
+                    setVisitingTime(response.data.VisitingTime);
+                    setPrice(response.data.Price);
+                    setCurrentServices(response.data.AbonementService.map(as => as.Service));
+
+                    setAbonnements([response.data,...abonnements]);
+                    setCurrentAbonnement(response.data);
+                }
+            }
+
         } catch (error) {
             console.error('response.status: ' + JSON.stringify(error.response.data.message, null, 2))
         }
@@ -249,7 +294,7 @@ export default function MainAdminPanel() {
                                 marginBottom: '10px',
                                 fontSize: '18px'
                             }}>
-                                Create/Edit Abonnements
+                                {currentAbonnement ? 'Edit Abonnement' : 'Create Abonnement'}
                             </div>
 
                             <div style={{display: 'flex', alignItems: "center", gap: "10px"}}>
@@ -312,23 +357,48 @@ export default function MainAdminPanel() {
                                     fullWidth
                                     multiple
                                     value={currentServices}
-                                    input={<OutlinedInput label="Tag" />}
+                                    input={<OutlinedInput label="Tag"/>}
                                     renderValue={(selected) => selected.map(sel => sel.Title + ' ')}
                                     MenuProps={MenuProps}
                                 >
                                     {allServices.map((service) => (
                                         <MenuItem key={service.Id} value={service.Title}>
-                                            <Checkbox onChange={() => handleServicesChange(service)} checked={currentServices.map(ser => ser.Id).includes(service.Id)} />
-                                            <ListItemText primary={service.Title} />
+                                            <Checkbox onChange={() => handleServicesChange(service)}
+                                                      checked={currentServices.map(ser => ser.Id).includes(service.Id)}/>
+                                            <ListItemText primary={service.Title}/>
                                         </MenuItem>
                                     ))}
                                 </Select>
                             </FormControl>
 
+                            {
+                                currentAbonnement && (
+                                    <div style={{
+                                        display: 'flex',
+                                        justifyContent: 'center',
+                                        marginTop: '25px'
+                                    }}>
+                                        <Button
+                                            style={{
+                                                color: 'white',
+                                                background: 'rgb(160, 147, 197)',
+                                                height: '50px',
+                                                width: '80%'
+                                            }}
 
-                            <div style={{display: 'flex',
+                                            onClick={handleDelete}
+                                        >
+                                            Delete
+                                        </Button>
+                                    </div>
+                                )
+                            }
+
+                            <div style={{
+                                display: 'flex',
                                 justifyContent: 'center',
-                            marginTop:'100px'}}>
+                                marginTop: currentAbonnement ? '20px' : '100px'
+                            }}>
                                 <Button
                                     style={{
                                         color: 'white',
@@ -339,7 +409,7 @@ export default function MainAdminPanel() {
 
                                     onClick={handleSubmit}
                                 >
-                                    Submit
+                                Submit
                                 </Button>
                             </div>
 

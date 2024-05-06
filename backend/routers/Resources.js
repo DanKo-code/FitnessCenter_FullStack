@@ -14,5 +14,7 @@ router.get  ("/coaches", TokenService.checkAccess, ResourcesController.coaches);
 router.post  ("/comments", TokenService.checkAccess, ResourcesController.createComment);
 router.get  ("/services", TokenService.checkAccess, ResourcesController.services);
 router.put  ("/abonnements", TokenService.checkAccess, ResourcesController.updateAbonement);
+router.post  ("/abonnements", TokenService.checkAccess, ResourcesController.createAbonement);
+router.delete  ("/abonnements/:abonementId", TokenService.checkAccess, ResourcesController.deleteAbonement);
 
 export default router
