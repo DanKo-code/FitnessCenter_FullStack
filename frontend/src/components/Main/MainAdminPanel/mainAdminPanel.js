@@ -27,6 +27,7 @@ import TextField from "@mui/material/TextField";
 import {Checkbox} from "@mui/joy";
 import {setUser} from "../../../states/storeSlice/appStateSlice";
 import AbonnementsModal from "../../AdminPanel/AbonnementsModal";
+import CoachesModal from "../../AdminPanel/CoachesModal";
 
 /*const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -101,6 +102,7 @@ export default function MainAdminPanel() {
                         </IconButton>
                     </div>
 
+                    <CoachesModal onClose={handleCloseCoachesModal}/>
 
                 </div>
             </Modal>

@@ -10,7 +10,7 @@ import {useNavigate} from "react-router-dom";
 
 export default function CoachCard(props) {
 
-    const {coach, width, height} = props;
+    const {coach, width, height, imageSize, button, onClick} = props;
     const navigate = useNavigate();
 
 
@@ -19,7 +19,7 @@ export default function CoachCard(props) {
     }
 
     return (
-        <div style={{
+        <div onClick={onClick} style={{
             background: 'rgb(160, 147, 197)',
             width: width,
             height: height,
@@ -30,7 +30,13 @@ export default function CoachCard(props) {
         }} key={coach.Id}>
             <div style={{display: 'flex', justifyContent: 'center'}}>
 
-                <div style={{width: '320px', paddingRight: '20px'}}>
+
+                {/*<div style={{width: '320px', paddingRight: '20px'}}>
+                    {abonnement.Photo}
+                    <img style={{width: '100%', height: 'auto'}} src={sad_doing_abonnements_card}/>
+                </div>*/}
+
+                <div style={{width: imageSize ? imageSize : '320px', paddingRight: '20px'}}>
                     {/*{abonnement.Photo}*/}
                     <img style={{width: '100%', height: 'auto'}} src={sad_doing_abonnements_card}/>
                 </div>
@@ -40,19 +46,22 @@ export default function CoachCard(props) {
                         {coach.Name}
                     </div>
 
-                    <Button
-                        style={{
-                            color: 'white',
-                            background: 'rgba(117,100,163,255)',
-                            width: '170px',
-                            height: '50px',
-                            marginBottom: '50px'
-                        }}
+                    {
+                        button ?? <Button
+                            style={{
+                                color: 'white',
+                                background: 'rgba(117,100,163,255)',
+                                width: '170px',
+                                height: '50px',
+                                marginBottom: '50px'
+                            }}
 
-                        onClick={handleDetails}
-                    >
-                        Details
-                    </Button>
+                            onClick={handleDetails}
+                        >
+                            Details
+                        </Button>
+                    }
+
                 </div>
 
             </div>

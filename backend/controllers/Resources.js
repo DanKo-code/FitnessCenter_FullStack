@@ -169,7 +169,48 @@ class ResourcesController {
         }
     }
 
+    static async updateCoach(req, res){
+        try{
+            const coachId = req.body.id;
+            const name = req.body.name;
+            const description = req.body.description;
 
+            const coach =
+                await CoachRepository.updateCoach({coachId, name, description});
+
+            res.status(200).json(coach);
+        }catch (e){
+            res.status(400).json({message: 'Coache can\'t be updated'})
+        }
+    }
+
+    static async createCoach(req, res){
+        try{
+            const coachId = uuidv4();
+            const name = req.body.name;
+            const description = req.body.description;
+
+            const coach =
+                await CoachRepository.createCoach({coachId, name, description});
+
+            res.status(200).json(coach);
+        }catch (e){
+            res.status(400).json({message: 'Coache can\'t be created'})
+        }
+    }
+
+    static async deleteCoach(req, res){
+        try{
+            const coachId = req.params.coachId;
+
+            const coach =
+                await CoachRepository.deleteCoach(coachId);
+
+            res.status(200).json(coach);
+        }catch (e){
+            res.status(400).json({message: 'Coache can\'t be deleted'})
+        }
+    }
 }
 
 export default ResourcesController;
