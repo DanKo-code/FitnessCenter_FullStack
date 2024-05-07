@@ -9,8 +9,7 @@ import {useDispatch, useSelector} from "react-redux";
 import config from "../../../../config";
 import inMemoryJWT from "../../../../services/inMemoryJWT";
 import {Resource} from "../../../../context/AuthContext";
-
-
+import io from 'socket.io-client'
 
 export default function AbonnementCard(props) {
 
@@ -27,6 +26,15 @@ export default function AbonnementCard(props) {
             }
 
             const response = await Resource.post('/orders', data);
+
+            if (response.status === 200) {
+                console.log('before socket')
+                const socket = io('http://localhost:3002'); // Подключение к серверу WebSocket
+                socket.emit('startTimer', data);
+                socket.on('expiration', (message) => {
+                    console.log(message); // Обработка сообщения об истечении срока абонемента
+                });
+            }
         } catch (e) {
             console.error('response.status: ' + JSON.stringify(e.response.data.message, null, 2))
         }

@@ -25,3 +25,4 @@ yarn-debug.log*
 yarn-error.log*
 frontend/node_modules
 .env
+WebSocketServer/node_modules
