@@ -10,6 +10,5 @@ export default function MainNavAdminPanel() {
             <MainNav/>
             <MainAdminPanel/>
         </div>
-
     );
 }
