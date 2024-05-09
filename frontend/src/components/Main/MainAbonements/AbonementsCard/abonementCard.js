@@ -9,7 +9,10 @@ import {useDispatch, useSelector} from "react-redux";
 import config from "../../../../config";
 import inMemoryJWT from "../../../../services/inMemoryJWT";
 import {Resource} from "../../../../context/AuthContext";
-import io from 'socket.io-client'
+import io from 'socket.io-client';
+import {setUser} from "../../../../states/storeSlice/appStateSlice";
+import showSuccessMessage from "../../../../utils/showSuccessMessage";
+
 
 export default function AbonnementCard(props) {
 
@@ -21,7 +24,11 @@ export default function AbonnementCard(props) {
     const handleBuy = async (event) => {
         try {
 
+            // Создаем новый объект, исключая свойство 'socket'
+            const { socket, ...userWithoutSocket } = user;
+
             const data = {
+                user: userWithoutSocket,
                 abonnement: abonnement
             }
 
@@ -29,11 +36,40 @@ export default function AbonnementCard(props) {
 
             if (response.status === 200) {
                 console.log('before socket')
-                const socket = io('http://localhost:3002'); // Подключение к серверу WebSocket
-                socket.emit('startTimer', data);
-                socket.on('expiration', (message) => {
-                    console.log(message); // Обработка сообщения об истечении срока абонемента
-                });
+                let allUserAbonements
+                try{
+                    allUserAbonements = await Resource.get('/ordersByUser');
+                }catch (error){
+                    console.error('Failed to fetch abonnements:', error);
+                }
+
+                console.log('allUserAbonements: '+JSON.stringify(allUserAbonements, null, 2))
+
+                if(user.socket){
+                    console.log('user.socket')
+                    console.log('data: '+JSON.stringify(data, null, 2))
+                    user.socket.emit('startTimer', data);
+
+                    const socket = user.socket;
+                    socket.emit('startTimer', data);
+
+                    socket.on('expiration', (message) => {
+                        console.log(message); // Обработка сообщения об истечении срока абонемента
+                        showSuccessMessage(message);
+                    });
+                }
+                else{
+                    let socket = await io('http://localhost:3002');
+
+                    console.log('data: '+JSON.stringify(data, null, 2))
+                    socket.emit('startTimer', data);
+
+                    user = {...user, socket: socket}
+
+                    dispatch(setUser(user));
+                }
+
+
             }
         } catch (e) {
             console.error('response.status: ' + JSON.stringify(e.response.data.message, null, 2))

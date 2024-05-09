@@ -15,19 +15,64 @@ const io = new Server(server, {
     }
 });
 
+let intervalId;
+let clientsAbonnements = [];
+
+// Функция для проверки статуса абонементов
+function checkAbonnements() {
+    const currentDate = new Date(); // Текущая дата и время
+
+    console.log('enter checkAbonnements');
+    console.log('clientsAbonnements.length: '+JSON.stringify(clientsAbonnements.length, null, 2))
+
+    clientsAbonnements.forEach((item, index) => {
+        const expirationDate = new Date(item.expirationDate);
+
+        console.log('currentDate: '+currentDate);
+        console.log('expirationDate: '+expirationDate);
+
+        if (currentDate >= expirationDate) {
+            io.to(item.socketId).emit('expiration', `Abonement "${item.abonement.Title}" has expired`);
+
+            clientsAbonnements.splice(index, 1);
+        }
+    })
+}
+
 io.on('connection', (socket) => {
     console.log(`Пользователь подключен: ${socket.id}`);
 
+    if(!intervalId){
+        console.log('setInterval')
+        intervalId = setInterval(checkAbonnements, 1000 * 5);
+    }
+
     socket.on('disconnect', () => {
         console.log(`Пользователь отключен: ${socket.id}`);
+
+        /*if(clientsAbonnements.length === 0){
+            clearInterval(intervalId);
+        }*/
     });
 
     socket.on('startTimer', (data) => {
-        const { abonnement } = data;
-        // Для примера используем setTimeout для эмуляции таймера
-        setTimeout(() => {
-            socket.emit('expiration', 'Ваш абонемент истек'); // Отправка сообщения об истечении срока абонемента
-        }, abonnement.Validity * 5000); // Продолжительность абонемента в секундах
+        const { abonnement, user } = data;
+
+        console.log('user: '+JSON.stringify(user, null, 2))
+        console.log('abonnement: '+JSON.stringify(abonnement, null, 2))
+
+        clientsAbonnements.forEach(item => {
+            if(item.clientId === user.Id){
+                item.socketId = socket.id;
+            }
+        })
+
+        clientsAbonnements.push({
+            socketId: socket.id,
+            clientId: user.Id,
+            abonement: abonnement,
+            expirationDate: new Date(Date.now() + abonnement.Validity * 1000)
+        })
     });
 });
 

@@ -4,6 +4,8 @@ import config from "../config";
 import inMemoryJWT from "../services/inMemoryJWT";
 import {setUser} from "../states/storeSlice/appStateSlice";
 import {useDispatch} from "react-redux";
+import io from "socket.io-client";
+import showSuccessMessage from "../utils/showSuccessMessage";
 
 export const AuthClient = axios.create({
     baseURL: `${config.API_URL}/auth`,
@@ -70,9 +72,22 @@ const AuthProvider = ({children}) => {
                 const{accessToken, accessTokenExpiration} = res.data;
                 inMemoryJWT.setToken(accessToken, accessTokenExpiration);
 
-                dispatch(setUser(res.data.user));
+
                 setIsAppReady(true);
                 setIsUserLogged(true);
+
+                let socket = io('http://localhost:3002');
+
+                socket.on('expiration', (message) => {
+                    console.log(message); // Обработка сообщения об истечении срока абонемента
+                    showSuccessMessage(message);
+                });
+
+                let user = res.data.user;
+
+                user.socket = socket
+
+                dispatch(setUser(user));
             })
             .catch((e)=>{
                 setIsAppReady(true);
