@@ -9,12 +9,12 @@ router.post("/sign-up", AuthValidator.signUp, AuthController.signUp);
 router.post("/logout", AuthValidator.logOut, AuthController.logOut);
 router.post("/refresh", AuthValidator.refresh, AuthController.refresh);*/
 
-router.post("/signIn", AuthController.signIn);
+router.post("/signIn", AuthValidator.signIn, AuthController.signIn);
 
-router.post("/signUp", AuthController.signUp);
+router.post("/signUp", AuthValidator.signUp, AuthController.signUp);
 
-router.post("/logout", AuthController.logOut);
+router.post("/logout", AuthValidator.logOut, AuthController.logOut);
 
-router.post("/refresh", AuthController.refresh);
+router.post("/refresh", AuthValidator.refresh, AuthController.refresh);
 
 export default router;

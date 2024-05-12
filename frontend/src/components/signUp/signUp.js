@@ -39,7 +39,9 @@ export default function SignUp() {
             }
         } catch (error) {
             showErrorMessage(error);
-            console.error('response.status: ' + JSON.stringify(error.response.data.message, null, 2))
+            console.error('response.status: ' + JSON.stringify(JSON.parse(error.response.data.error).errors[0], null, 2))
+
+            //console.error('response.status: ' + JSON.stringify(error.response.data.message, null, 2))
         }
     };
 

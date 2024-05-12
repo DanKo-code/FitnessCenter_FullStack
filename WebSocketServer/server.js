@@ -56,23 +56,30 @@ io.on('connection', (socket) => {
     });
 
     socket.on('startTimer', (data) => {
-        const { abonnement, user } = data;
+        try{
+            const { abonnement, user } = data;
 
-        console.log('user: '+JSON.stringify(user, null, 2))
-        console.log('abonnement: '+JSON.stringify(abonnement, null, 2))
+            console.log('user: '+JSON.stringify(user, null, 2))
+            //console.log('abonnement: '+JSON.stringify(abonnement, null, 2))
 
-        clientsAbonnements.forEach(item => {
-            if(item.clientId === user.Id){
-                item.socketId = socket.id;
+            clientsAbonnements.forEach(item => {
+                if(item.clientId === user.Id){
+                    item.socketId = socket.id;
+                }
+            })
+
+            if(abonnement){
+                clientsAbonnements.push({
+                    socketId: socket.id,
+                    clientId: user.Id,
+                    abonement: abonnement,
+                    expirationDate: new Date(Date.now() + abonnement.Validity * 1000)
+                })
             }
-        })
+        }catch (err){
+            console.log('Socket err: '+JSON.stringify(err, null, 2))
+        }
 
-        clientsAbonnements.push({
-            socketId: socket.id,
-            clientId: user.Id,
-            abonement: abonnement,
-            expirationDate: new Date(Date.now() + abonnement.Validity * 1000)
-        })
     });
 });
 

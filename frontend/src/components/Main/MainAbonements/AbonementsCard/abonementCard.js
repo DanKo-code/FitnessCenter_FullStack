@@ -35,7 +35,6 @@ export default function AbonnementCard(props) {
             const response = await Resource.post('/orders', data);
 
             if (response.status === 200) {
-                console.log('before socket')
                 let allUserAbonements
                 try{
                     allUserAbonements = await Resource.get('/ordersByUser');
@@ -43,29 +42,17 @@ export default function AbonnementCard(props) {
                     console.error('Failed to fetch abonnements:', error);
                 }
 
-                console.log('allUserAbonements: '+JSON.stringify(allUserAbonements, null, 2))
-
                 if(user.socket){
-                    console.log('user.socket')
-                    console.log('data: '+JSON.stringify(data, null, 2))
                     user.socket.emit('startTimer', data);
-
-                    const socket = user.socket;
-                    socket.emit('startTimer', data);
-
-                    socket.on('expiration', (message) => {
-                        console.log(message); // Обработка сообщения об истечении срока абонемента
-                        showSuccessMessage(message);
-                    });
                 }
                 else{
                     let socket = await io('http://localhost:3002');
-
-                    console.log('data: '+JSON.stringify(data, null, 2))
                     socket.emit('startTimer', data);
-
+                    user.socket.on('expiration', (message) => {
+                        console.log(message); // Обработка сообщения об истечении срока абонемента
+                        showSuccessMessage(message);
+                    });
                     user = {...user, socket: socket}
-
                     dispatch(setUser(user));
                 }
 

@@ -6,6 +6,7 @@ import {setUser} from "../states/storeSlice/appStateSlice";
 import {useDispatch} from "react-redux";
 import io from "socket.io-client";
 import showSuccessMessage from "../utils/showSuccessMessage";
+import ShowErrorMessage from "../utils/showErrorMessage";
 
 export const AuthClient = axios.create({
     baseURL: `${config.API_URL}/auth`,
@@ -46,6 +47,7 @@ const AuthProvider = ({children}) => {
                 setIsUserLogged(false);
             })
             .catch((e)=>{
+                ShowErrorMessage(e);
                 console.error(JSON.stringify(e, null, 2))
             });
     };
@@ -78,18 +80,30 @@ const AuthProvider = ({children}) => {
 
                 let socket = io('http://localhost:3002');
 
+                let user = res.data.user;
+
+                const dataa = {
+                    user: user,
+                }
+
+                console.log('dataa: '+JSON.stringify(dataa, null, 2))
+
+                socket.emit('startTimer', dataa);
+
                 socket.on('expiration', (message) => {
                     console.log(message); // Обработка сообщения об истечении срока абонемента
                     showSuccessMessage(message);
                 });
 
-                let user = res.data.user;
 
-                user.socket = socket
+                user = {...user, socket: socket}
 
                 dispatch(setUser(user));
             })
             .catch((e)=>{
+                console.log('err: '+JSON.stringify(e))
+                ShowErrorMessage(e);
+
                 setIsAppReady(true);
                 setIsUserLogged(false);
             })
