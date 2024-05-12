@@ -78,7 +78,12 @@ const AuthProvider = ({children}) => {
                 setIsAppReady(true);
                 setIsUserLogged(true);
 
-                let socket = io('http://localhost:3002');
+
+                let socket = io('http://localhost:3002', {
+                    extraHeaders: {
+                        Authorization: `Bearer ${accessToken}`
+                    }
+                });
 
                 let user = res.data.user;
 
@@ -102,7 +107,6 @@ const AuthProvider = ({children}) => {
             })
             .catch((e)=>{
                 console.log('err: '+JSON.stringify(e))
-                ShowErrorMessage(e);
 
                 setIsAppReady(true);
                 setIsUserLogged(false);

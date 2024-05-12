@@ -3,6 +3,11 @@ const app = express();
 import http from 'http'
 import {Server} from "socket.io";
 import cors from 'cors';
+import * as yup from "yup";
+import TokenService from "../backend/services/Token.js";
+import {Forbidden, Unauthorized} from "../backend/utils/Errors.js";
+import jwt from "jsonwebtoken";
+import prismaClient from "../prisma/Clients.js";
 
 app.use(cors());
 
@@ -18,70 +23,174 @@ const io = new Server(server, {
 let intervalId;
 let clientsAbonnements = [];
 
-// Функция для проверки статуса абонементов
+const validationSchema = yup.object().shape({
+    orderId:
+        yup.
+        string().
+        required('orderId is required').
+        uuid('orderId must be in uuid format'),
+    abonementTitle:
+        yup.
+        string().
+        required('abonementTitle is required').
+        min(2, 'abonementTitle must be at least 2 characters').
+        max(40, 'abonementTitle must be at most 40 characters').
+        matches(/^[A-Za-zА-Яа-яЁё\s]*$/, 'Please enter valid abonementTitle. ' +
+            'Only english and russian upper and lower case symbols are allowed'),
+    abonementValidity:
+        yup.
+        number().
+        positive().
+        integer().
+        required('abonementValidity is required').
+        min(1).
+        max(12),
+});
+
+const validateParams = (socket, next) => {
+    return async (data) => {
+        try {
+            await validationSchema.validate(data);
+            next(data);
+        } catch (error) {
+            console.error('Validation error:', error.message);
+            socket.emit('error', error.message); // Отправка сообщения об ошибке клиенту
+            return next(new Error());
+        }
+    };
+};
+
 function checkAbonnements() {
     const currentDate = new Date(); // Текущая дата и время
 
     console.log('enter checkAbonnements');
     console.log('clientsAbonnements.length: '+JSON.stringify(clientsAbonnements.length, null, 2))
 
-    clientsAbonnements.forEach((item, index) => {
+    let expiredOrders = [];
+
+    clientsAbonnements.forEach(async (item, index) => {
         const expirationDate = new Date(item.expirationDate);
 
         console.log('currentDate: '+currentDate);
         console.log('expirationDate: '+expirationDate);
 
         if (currentDate >= expirationDate) {
-            io.to(item.socketId).emit('expiration', `Abonement "${item.abonement.Title}" has expired`);
+
+            expiredOrders.push(item.orderId);
+
+            await prismaClient.order.update({
+                where: {
+                    Id: item.orderId
+                },
+                data: {
+                    Status: 0
+                }
+            })
+
+            io.to(item.socketId).emit('expiration', `Abonement "${item.abonementTitle}" has expired`);
 
             clientsAbonnements.splice(index, 1);
         }
     })
+
+    /*const stringIds = expiredOrders.map(id => id.toString());
+
+    if(expiredOrders.length > 0){
+        await prismaClient.order.update({
+            where: {
+                Id: {
+                    in: stringIds
+                },
+            },
+            data: {
+                Status: 0
+            }
+        })
+    }*/
 }
 
-io.on('connection', (socket) => {
-    console.log(`Пользователь подключен: ${socket.id}`);
+io.use(async (socket, next)=>{
 
-    if(!intervalId){
+    const authHeader = socket.handshake.headers.authorization;
+
+    const token = authHeader?.split(" ")?.[1];
+
+    if (!token) {
+        console.log('error: No token')
+        return next(new Error());
+    }
+
+    try{
+        socket.user = await jwt.verify(token, 'access_danila')
+    }catch (error){
+        console.log('error: '+JSON.stringify(error, null, 2));
+        return next(new Error());
+    }
+    next()
+})
+
+io.on('connection', (socket) => {
+    console.log(`User connected:' ${socket.id}`);
+
+    const clientId = socket.user.id;
+
+    clientsAbonnements.forEach(item => {
+        if (item.clientId === clientId) {
+            item.socketId = socket.id;
+        }
+    })
+
+    if (!intervalId) {
         console.log('setInterval')
         intervalId = setInterval(checkAbonnements, 1000 * 5);
     }
 
     socket.on('disconnect', () => {
-        console.log(`Пользователь отключен: ${socket.id}`);
+        console.log(`User disconnected: ${socket.id}`);
 
-        /*if(clientsAbonnements.length === 0){
-            clearInterval(intervalId);
-        }*/
     });
 
-    socket.on('startTimer', (data) => {
-        try{
-            const { abonnement, user } = data;
+    //TestMode
+    const expirationDateConst = 1000
 
-            console.log('user: '+JSON.stringify(user, null, 2))
-            //console.log('abonnement: '+JSON.stringify(abonnement, null, 2))
+    //RealMode
+    //const expirationDateConst = 1000 * 60 * 60 * 30
 
-            clientsAbonnements.forEach(item => {
-                if(item.clientId === user.Id){
-                    item.socketId = socket.id;
+    socket.on('startTimer',
+        validateParams(socket, async (data) => {
+        try {
+            const {orderId, abonementTitle} = data;
+
+            const orderWithAbonement = await prismaClient.order.findUnique({
+                where: {
+                    Id: orderId
+                },
+                include:{
+                    Abonement: true
                 }
             })
 
-            if(abonnement){
+            let abonementValidity;
+            if(orderWithAbonement.Abonement.Title === abonementTitle){
+                abonementValidity = orderWithAbonement.Abonement.Validity;
+
                 clientsAbonnements.push({
                     socketId: socket.id,
-                    clientId: user.Id,
-                    abonement: abonnement,
-                    expirationDate: new Date(Date.now() + abonnement.Validity * 1000)
+                    orderId: orderId,
+                    clientId: clientId,
+                    abonementTitle: abonementTitle,
+                    expirationDate: new Date(Date.now() + abonementValidity * expirationDateConst)
                 })
             }
-        }catch (err){
-            console.log('Socket err: '+JSON.stringify(err, null, 2))
+            else{
+                socket.emit('error', 'no such abonement')
+            }
+        } catch (err) {
+            console.log('Socket err: ' + JSON.stringify(err, null, 2))
+            socket.emit('error', err)
         }
-
-    });
-});
+    }))
+})
 
 server.listen(3002, ()=>{
     console.log('SERVER IS RUNNING IN PORT 3002');

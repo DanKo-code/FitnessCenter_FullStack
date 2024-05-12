@@ -39,25 +39,22 @@ class ResourcesController {
 
             const user = await AuthService.getUserByToken(req);
 
-            if(!req.body.abonnement.Id){
-                return res.status(404).json({ message: 'Abonnement not exists' });
-            }
+            const abonement = await AbonnementRepository.getAbonnementById(req.body.abonementId);
 
-            const abonnement = await AbonnementRepository.getAbonnementByTitle(req.body.abonnement.Title);
-
-            if (!abonnement) {
+            if (!abonement) {
                 return res.status(404).json({ message: 'Abonnement not exists' });
             }
 
             const orderId = uuidv4();
-            const abonementId = abonnement.Id;
+            const abonementId = req.body.abonementId;
             const clientId = user.id;
-            const order = OrderRepository.createOrder({orderId, abonementId, clientId})
+            const order = await OrderRepository.createOrder({orderId, abonementId, clientId})
 
 
+            console.log('Created Order: '+JSON.stringify(order, null, 2))
             res.status(200).json(order)
         }catch (e){
-            res.status(400).json({message: 'Orders can\'t be retrieved'})
+            res.status(400).json({message: 'Order can\'t be create'})
         }
     }
 

@@ -12,6 +12,7 @@ import {Resource} from "../../../../context/AuthContext";
 import io from 'socket.io-client';
 import {setUser} from "../../../../states/storeSlice/appStateSlice";
 import showSuccessMessage from "../../../../utils/showSuccessMessage";
+import ShowErrorMessage from "../../../../utils/showErrorMessage";
 
 
 export default function AbonnementCard(props) {
@@ -27,27 +28,38 @@ export default function AbonnementCard(props) {
             // Создаем новый объект, исключая свойство 'socket'
             const { socket, ...userWithoutSocket } = user;
 
-            const data = {
-                user: userWithoutSocket,
-                abonnement: abonnement
+            const postOrdersData = {
+                abonementId: abonnement.Id
             }
 
-            const response = await Resource.post('/orders', data);
+            const response = await Resource.post('/orders', postOrdersData);
 
             if (response.status === 200) {
-                let allUserAbonements
-                try{
-                    allUserAbonements = await Resource.get('/ordersByUser');
-                }catch (error){
-                    console.error('Failed to fetch abonnements:', error);
+                const createdOrderId = response.data.Id;
+
+                console.log('postOrders: '+JSON.stringify(response, null, 2))
+
+                const socketStartTimerData = {
+                    orderId: createdOrderId,
+                    abonementTitle: abonnement.Title,
+                    abonementValidity: abonnement.Validity
                 }
 
                 if(user.socket){
-                    user.socket.emit('startTimer', data);
+                    user.socket.emit('startTimer', socketStartTimerData);
                 }
                 else{
-                    let socket = await io('http://localhost:3002');
-                    socket.emit('startTimer', data);
+                    const accessToken = inMemoryJWT.getToken();
+
+                    let socket = await io('http://localhost:3002', {
+                        reconnection: true,
+                        reconnectionAttempts: 5,
+                        reconnectionDelay: 1000,
+                        extraHeaders: {
+                            Authorization: `Bearer ${accessToken}`
+                        }
+                    });
+                    socket.emit('startTimer', socketStartTimerData);
                     user.socket.on('expiration', (message) => {
                         console.log(message); // Обработка сообщения об истечении срока абонемента
                         showSuccessMessage(message);
@@ -59,7 +71,8 @@ export default function AbonnementCard(props) {
 
             }
         } catch (e) {
-            console.error('response.status: ' + JSON.stringify(e.response.data.message, null, 2))
+            ShowErrorMessage(e);
+            console.error('err: ' + JSON.stringify(e, null, 2))
         }
     }
 

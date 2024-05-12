@@ -26,6 +26,17 @@ class AbonnementRepository {
         return abonnement
     }
 
+    static async getAbonnementById(abonementId) {
+
+        const abonnement = await prismaClient.abonement.findUnique({
+            where: {
+                Id: abonementId
+            }
+        });
+
+        return abonnement
+    }
+
     static async updateAbonement({abonementId, title, validityPeriod, visitingTime, price, services}) {
 
         try{

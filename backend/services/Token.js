@@ -31,9 +31,10 @@ class TokenService {
         try{
             req.user = await TokenService.verifyAccessToken(token);
         }catch (error){
-            console.log(error);
+            console.log('error: '+JSON.stringify(error, null, 2));
             return next(new Forbidden(error));
         }
+
 
         next();
     }
