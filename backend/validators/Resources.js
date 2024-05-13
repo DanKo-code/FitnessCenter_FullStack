@@ -129,7 +129,9 @@ export const putCoachesSchema = Yup.object({
             .string()
             .required('description is required')
             .min(5, 'description must be at least 10 characters')
-            .max(200, 'description must be at most 200 characters')
+            .max(500, 'description must be at most 200 characters'),
+        services: Yup.array().of(Yup.string().uuid()).required('At least 1 service is required')
+            .min(1, 'At least one UUID is required')
     })
 });
 
@@ -146,7 +148,9 @@ export const postCoachesSchema = Yup.object({
             .string()
             .required('description is required')
             .min(5, 'description must be at least 10 characters')
-            .max(200, 'description must be at most 200 characters')
+            .max(200, 'description must be at most 200 characters'),
+        services: Yup.array().of(Yup.string().uuid()).required('At least 1 service is required')
+            .min(1, 'At least one UUID is required')
     })
 });
 

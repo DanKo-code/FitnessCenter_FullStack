@@ -19,6 +19,18 @@ import {
 import {Checkbox} from "@mui/joy";
 import Button from "@mui/material/Button";
 import CoachCard from "../Main/MainCoaches/CoachesCard/coachCard";
+import ShowErrorMessage from "../../utils/showErrorMessage";
+
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+    PaperProps: {
+        style: {
+            maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+            width: 250,
+        },
+    },
+};
 
 export default function CoachesModal({onClose}) {
     const [coaches, setCoaches] = useState([]);
@@ -26,6 +38,18 @@ export default function CoachesModal({onClose}) {
 
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
+
+    const [currentServices, setCurrentServices] = useState([]);
+    const [allServices, setAllServices] = useState([]);
+
+    const handleServicesChange = async (service) => {
+        if (currentServices.map(serviceObg => serviceObg.Id).includes(service.Id)) {
+            const updatedServices = currentServices.filter(serviceObj => serviceObj.Id !== service.Id);
+            setCurrentServices(updatedServices);
+        } else {
+            setCurrentServices([service, ...currentServices]);
+        }
+    }
 
     useEffect(() => {
         Resource.get('/coaches')
@@ -36,11 +60,21 @@ export default function CoachesModal({onClose}) {
                 showErrorMessage(error);
                 console.error('Failed to fetch coaches:', error);
             });
+
+        Resource.get('/services')
+            .then(response => {
+                setAllServices(response.data);
+            })
+            .catch(error => {
+                showErrorMessage(error);
+                console.error('Failed to fetch services:', error);
+            });
     }, []);
 
     const handleCloseCoachesModal = () => {
         setName('');
         setDescription('');
+        setCurrentServices([]);
 
         onClose()
     };
@@ -75,9 +109,11 @@ export default function CoachesModal({onClose}) {
         if (currentCoach) {
             setName(currentCoach.Name);
             setDescription(currentCoach.Description);
+            setCurrentServices(currentCoach.CoachService.map(as => as.Service));
         } else {
             setName('');
             setDescription('');
+            setCurrentServices([]);
         }
 
     }, [currentCoach]);
@@ -109,6 +145,7 @@ export default function CoachesModal({onClose}) {
             id: currentCoach.Id,
             name: name,
             description: description,
+            services: currentServices.map(service=>service.Id)
         }
 
         try {
@@ -143,6 +180,7 @@ export default function CoachesModal({onClose}) {
             }
 
         } catch (error) {
+            ShowErrorMessage(error)
             console.error('response.status: ' + JSON.stringify(error.response.data.message, null, 2))
         }
     }
@@ -222,15 +260,6 @@ export default function CoachesModal({onClose}) {
                         />
                     </div>
 
-
-                    {/*<TextField style={{marginBottom: '10px'}}
-                               fullWidth
-                               label="Description"
-                               value={description}
-                               onChange={handleDescriptionChange}
-                    />*/}
-
-
                     <TextareaAutosize
                         style={{
                             width: "100%",
@@ -240,12 +269,33 @@ export default function CoachesModal({onClose}) {
                             borderRadius: "4px",
                             padding: "8px",
                             boxSizing: "border-box",
+                            marginBottom: '10px'
 
                         }}
                         value={description}
                         onChange={handleDescriptionChange}
                         maxRows={10} // Максимальное количество строк для отображения
                     />
+
+                    <FormControl fullWidth>
+                        <InputLabel fullWidth>Services</InputLabel>
+                        <Select
+                            fullWidth
+                            multiple
+                            value={currentServices}
+                            input={<OutlinedInput label="Tag"/>}
+                            renderValue={(selected) => selected.map(sel => sel.Title + ' ')}
+                            MenuProps={MenuProps}
+                        >
+                            {allServices.map((service) => (
+                                <MenuItem key={service.Id} value={service.Title}>
+                                    <Checkbox onChange={() => handleServicesChange(service)}
+                                              checked={currentServices.map(ser => ser.Id).includes(service.Id)}/>
+                                    <ListItemText primary={service.Title}/>
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
 
                     {
                         currentCoach && (

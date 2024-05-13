@@ -99,6 +99,7 @@ class ResourcesController {
         try{
             const coaches = await CoachRepository.getAllCoaches();
 
+            console.log('coaches: '+JSON.stringify(coaches, null, 2))
             res.status(200).json(coaches)
         }catch (e){
             res.status(400).json({message: 'Сoaches can\'t be taken'})
@@ -171,9 +172,10 @@ class ResourcesController {
             const coachId = req.body.id;
             const name = req.body.name;
             const description = req.body.description;
+            const services = req.body.services;
 
             const coach =
-                await CoachRepository.updateCoach({coachId, name, description});
+                await CoachRepository.updateCoach({coachId, name, description, services});
 
             res.status(200).json(coach);
         }catch (e){
@@ -186,9 +188,10 @@ class ResourcesController {
             const coachId = uuidv4();
             const name = req.body.name;
             const description = req.body.description;
+            const services = req.body.services;
 
             const coach =
-                await CoachRepository.createCoach({coachId, name, description});
+                await CoachRepository.createCoach({coachId, name, description, services});
 
             res.status(200).json(coach);
         }catch (e){
