@@ -42,7 +42,7 @@ class ResourcesController {
             const abonement = await AbonnementRepository.getAbonnementById(req.body.abonementId);
 
             if (!abonement) {
-                return res.status(404).json({ message: 'Abonnement not exists' });
+                return res.status(404).json({ message: 'Abonement not exists' });
             }
 
             const orderId = uuidv4();
@@ -50,8 +50,6 @@ class ResourcesController {
             const clientId = user.id;
             const order = await OrderRepository.createOrder({orderId, abonementId, clientId})
 
-
-            console.log('Created Order: '+JSON.stringify(order, null, 2))
             res.status(200).json(order)
         }catch (e){
             res.status(400).json({message: 'Order can\'t be create'})
@@ -79,12 +77,14 @@ class ResourcesController {
 
     static async updateAbonement(req, res){
         try{
-            const abonementId = req.body.id;
+            const abonementId = req.body.abonementId;
             const title = req.body.title;
             const validityPeriod = req.body.validityPeriod;
             const visitingTime = req.body.visitingTime;
             const price = req.body.price;
             const services = req.body.services;
+
+            console.log('updateAbonement->services: '+JSON.stringify(services, null, 2))
 
             const abonement =
                 await AbonnementRepository.updateAbonement({abonementId, title, validityPeriod, visitingTime, price, services});
@@ -120,17 +120,17 @@ class ResourcesController {
 
             const user = await AuthService.getUserByToken(req);
 
-            if(!req.body.coach.Id){
+            if(!req.body.coachId){
                 return res.status(404).json({ message: 'Coach not exists' });
             }
 
             const commentId = uuidv4();
-            const comment = await CommentRepository.createComment({commentId, commentBody: req.body.reviewText , clientId: user.id, coachId: req.body.coach.Id});
+            const comment = await CommentRepository.createComment({commentId, commentBody: req.body.reviewText , clientId: user.id, coachId: req.body.coachId});
 
 
             res.status(200).json(comment)
         }catch (e){
-            res.status(400).json({message: 'Orders can\'t be retrieved'})
+            res.status(400).json({message: 'Comment can\'t be created'})
         }
     }
 

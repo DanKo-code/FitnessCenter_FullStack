@@ -91,12 +91,9 @@ const AuthProvider = ({children}) => {
                     user: user,
                 }
 
-                console.log('dataa: '+JSON.stringify(dataa, null, 2))
-
                 socket.emit('startTimer', dataa);
 
                 socket.on('expiration', (message) => {
-                    console.log(message); // Обработка сообщения об истечении срока абонемента
                     showSuccessMessage(message);
                 });
 

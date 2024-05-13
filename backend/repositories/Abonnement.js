@@ -39,81 +39,92 @@ class AbonnementRepository {
 
     static async updateAbonement({abonementId, title, validityPeriod, visitingTime, price, services}) {
 
-        try{
-            let oldServices = await prismaClient.abonementService.findMany({
-                where: {
-                    AbonementsId: abonementId
-                }
-            })
-
-            oldServices = oldServices.map(abonementServices => abonementServices.ServicesId)
-            const newServiceIds = services.map(service => service.Id);
-            const servicesToAdd = newServiceIds.filter(id => !oldServices.includes(id));
-            oldServices.push(...servicesToAdd);
-            const servicesToRemove = oldServices.filter(id => !newServiceIds.includes(id))
-
-            if(servicesToAdd.length > 0){
-
-                const abonementServiceToAdd = servicesToAdd.map(serviceId => ({
-                    AbonementsId: abonementId,
-                    ServicesId: serviceId
-                }));
-
-                let addedServices = await prismaClient.abonementService.createMany({
-                    data: abonementServiceToAdd
-                })
+        let oldServices = await prismaClient.abonementService.findMany({
+            where: {
+                AbonementsId: abonementId
             }
+        })
 
-            if(servicesToRemove.length > 0){
-                const abonementServiceToRemove = servicesToRemove.map(serviceId => ({
-                    AbonementsId: abonementId,
-                    ServicesId: serviceId
-                }));
+        oldServices = oldServices.map(abonementServices => abonementServices.ServicesId.toUpperCase())
+        const newServiceIds = services.map(serviceId=>serviceId.toUpperCase());
+        const servicesToAdd = newServiceIds.filter(id => !oldServices.includes(id));
+        oldServices.push(...servicesToAdd);
+        const servicesToRemove = oldServices.filter(id => !newServiceIds.includes(id))
 
-                let deletedServices = await prismaClient.abonementService.deleteMany({
-                    where:{
-                        AbonementsId: abonementId,
-                        ServicesId: {in: servicesToRemove}
-                    }
-                })
-            }
+        console.log('oldServices: '+JSON.stringify(oldServices, null, 2))
+        console.log('newServiceIds: '+JSON.stringify(newServiceIds, null, 2))
+        console.log('servicesToAdd: '+JSON.stringify(servicesToAdd, null, 2))
+        console.log('servicesToRemove: '+JSON.stringify(servicesToRemove, null, 2))
 
-            await prismaClient.abonement.update({
-                where: {
-                    Id: abonementId
-                },
-                data: {
-                    Title: title,
-                    Validity: validityPeriod,
-                    VisitingTime: visitingTime,
-                    Price: Number(price),
-                }
+        if(servicesToAdd.length > 0){
+
+            const abonementServiceToAdd = servicesToAdd.map(serviceId => ({
+                AbonementsId: abonementId,
+                ServicesId: serviceId
+            }));
+
+            let addedServices = await prismaClient.abonementService.createMany({
+                data: abonementServiceToAdd
             })
-
-            const abonement = await prismaClient.abonement.findFirst({
-                where:{
-                    Id: abonementId
-                },
-                include: {
-                    AbonementService: {
-                        include: {
-                            Service: true
-                        }
-                    }
-                }
-            })
-
-            return abonement;
-        }catch (e){
-            console.log('e: '+JSON.stringify(e, null, 2))
         }
+
+        if(servicesToRemove.length > 0){
+            const abonementServiceToRemove = servicesToRemove.map(serviceId => ({
+                AbonementsId: abonementId,
+                ServicesId: serviceId
+            }));
+
+            let deletedServices = await prismaClient.abonementService.deleteMany({
+                where:{
+                    AbonementsId: abonementId,
+                    ServicesId: {in: servicesToRemove}
+                }
+            })
+        }
+
+        await prismaClient.abonement.update({
+            where: {
+                Id: abonementId
+            },
+            data: {
+                Title: title,
+                Validity: validityPeriod,
+                VisitingTime: visitingTime,
+                Price: Number(price),
+            }
+        })
+
+        const abonement = await prismaClient.abonement.findFirst({
+            where:{
+                Id: abonementId
+            },
+            include: {
+                AbonementService: {
+                    include: {
+                        Service: true
+                    }
+                }
+            }
+        })
+
+        return abonement;
     }
 
     static async createAbonement({abonementId, title, validityPeriod, visitingTime, price, services}) {
 
-        const newAbonementServices = services.map(item => { return {
+        const existingAbonement = await prismaClient.abonement.findFirst({
+            where:{
+                Title: title
+            }
+        })
+
+        if(existingAbonement){
+            throw new Error('Abonement with this title already existing')
+        }
+
+        const newAbonementServices = services.map(serviceId => { return {
             AbonementsId: abonementId,
-            ServicesId: item.Id
+            ServicesId: serviceId
         }})
 
         const abonement = await prismaClient.abonement.create({

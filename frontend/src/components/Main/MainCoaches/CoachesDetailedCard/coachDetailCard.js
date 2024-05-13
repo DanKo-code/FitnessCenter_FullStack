@@ -36,7 +36,7 @@ export default function CoachDetailsCard(props) {
 
             const data = {
                 reviewText: reviewText,
-                coach: coach,
+                coachId: coach.Id,
             }
 
             const response = await Resource.post('/comments', data);

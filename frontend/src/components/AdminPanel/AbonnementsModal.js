@@ -148,12 +148,12 @@ export default function AbonnementsModal({onClose}) {
         event.preventDefault();
 
         const data = {
-            id: currentAbonnement.Id,
+            abonementId: currentAbonnement.Id,
             title: title,
             validityPeriod: validityPeriod,
             visitingTime: visitingTime,
             price: price,
-            services: currentServices
+            services: currentServices.map(service=>service.Id)
         }
 
         try {

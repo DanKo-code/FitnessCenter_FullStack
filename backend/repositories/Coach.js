@@ -44,6 +44,17 @@ class CoachRepository {
     }
 
     static async createCoach({coachId, name, description}) {
+
+        const existingCoach = await prismaClient.coach.findFirst({
+            where: {
+                Name: name
+            }
+        })
+
+        if(existingCoach){
+            throw new Error('Coach with this name already existing');
+        }
+
         const coach = await prismaClient.coach.create({
             data:{
                 Id: coachId,

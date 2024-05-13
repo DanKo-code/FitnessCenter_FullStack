@@ -37,8 +37,6 @@ export default function AbonnementCard(props) {
             if (response.status === 200) {
                 const createdOrderId = response.data.Id;
 
-                console.log('postOrders: '+JSON.stringify(response, null, 2))
-
                 const socketStartTimerData = {
                     orderId: createdOrderId,
                     abonementTitle: abonnement.Title,
@@ -61,7 +59,6 @@ export default function AbonnementCard(props) {
                     });
                     socket.emit('startTimer', socketStartTimerData);
                     user.socket.on('expiration', (message) => {
-                        console.log(message); // Обработка сообщения об истечении срока абонемента
                         showSuccessMessage(message);
                     });
                     user = {...user, socket: socket}
