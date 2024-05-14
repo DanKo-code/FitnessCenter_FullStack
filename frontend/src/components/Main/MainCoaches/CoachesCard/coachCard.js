@@ -28,7 +28,7 @@ export default function CoachCard(props) {
             alignItems: 'center',
             justifyContent: 'center'
         }} key={coach.Id}>
-            <div style={{display: 'flex', justifyContent: 'center'}}>
+            <div style={{display: 'flex', justifyContent: 'center', flexDirection: "column"}}>
 
 
                 {/*<div style={{width: '320px', paddingRight: '20px'}}>
@@ -36,34 +36,49 @@ export default function CoachCard(props) {
                     <img style={{width: '100%', height: 'auto'}} src={sad_doing_abonnements_card}/>
                 </div>*/}
 
-                <div style={{width: imageSize ? imageSize : '320px', paddingRight: '20px'}}>
-                    {/*{abonnement.Photo}*/}
-                    <img style={{width: '100%', height: 'auto'}} src={sad_doing_abonnements_card}/>
-                </div>
-
-                <div style={{display: 'flex', flexDirection: 'column', justifyContent: 'space-between'}}>
-                    <div style={{marginTop: '5px', fontSize: '24px'}}>
-                        {coach.Name}
+                <div style={{display: 'flex', justifyContent: 'center', paddingBottom: '20px'}}>
+                    <div style={{width: imageSize ? imageSize : '320px', paddingRight: '20px'}}>
+                        {/*{abonnement.Photo}*/}
+                        <img style={{width: '100%', height: 'auto'}} src={sad_doing_abonnements_card}/>
                     </div>
 
-                    {
-                        button ?? <Button
-                            style={{
-                                color: 'white',
-                                background: 'rgba(117,100,163,255)',
-                                width: '170px',
-                                height: '50px',
-                                marginBottom: '50px'
-                            }}
+                    <div style={{display: 'flex', flexDirection: 'column', justifyContent: 'space-between'}}>
+                        <div style={{marginTop: '5px', fontSize: '24px'}}>
+                            {coach.Name}
+                        </div>
 
-                            onClick={handleDetails}
-                        >
-                            Details
-                        </Button>
-                    }
+                        {
+                            button ?? <Button
+                                style={{
+                                    color: 'white',
+                                    background: 'rgba(117,100,163,255)',
+                                    width: '170px',
+                                    height: '50px',
+                                    marginBottom: '50px'
+                                }}
+
+                                onClick={handleDetails}
+                            >
+                                Details
+                            </Button>
+                        }
+
+                    </div>
 
                 </div>
 
+                <div style={{paddingBottom: '15px', fontSize: '18px'}}>Services:</div>
+                <div style={{display: 'flex',}}>
+                    {coach.CoachService.map(Service => (
+                        <div style={{marginRight: '10px'}}>
+                            <div style={{width: '80px', height: '60px'}}>
+                                <img style={{width: '100%', height: 'auto'}}
+                                     src={sad_doing_abonnements_card}/>
+                            </div>
+                            <div>{Service.Service.Title}</div>
+                        </div>
+                    ))}
+                </div>
             </div>
 
 

@@ -20,7 +20,7 @@ export default function AbonnementCard(props) {
     const dispatch = useDispatch();
     let user = useSelector((state) => state.userSliceMode.user);
 
-    const {abonnement, width, height, buyButton, onClick} = props;
+    const {abonnement, width, height, buyButton, onClick, status} = props;
 
     const handleBuy = async (event) => {
         try {
@@ -35,6 +35,8 @@ export default function AbonnementCard(props) {
             const response = await Resource.post('/orders', postOrdersData);
 
             if (response.status === 200) {
+                showSuccessMessage("Abonement bought successfully");
+
                 const createdOrderId = response.data.Id;
 
                 const socketStartTimerData = {
@@ -73,13 +75,35 @@ export default function AbonnementCard(props) {
         }
     }
 
+    const styles = {
+        overlay: {
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            color: 'white',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1,
+            fontSize: '24px',
+        },
+
+
+    }
+
     return (
         <div onClick={onClick} style={{
             background: 'rgb(160, 147, 197)',
             width: width,
             height: height,
-            marginBottom: '10px'
+            marginBottom: '10px',
+            position: "relative"
         }}>
+            {status === 0 && <div style={styles.overlay}>Expired</div>}
+
             <div style={{display: 'flex', justifyContent: 'center'}}>
                 <div style={{marginTop: '5px', fontSize: '24px'}}>
                     {abonnement.Title}
@@ -176,4 +200,6 @@ export default function AbonnementCard(props) {
             </div>
         </div>
     )
+
+
 }

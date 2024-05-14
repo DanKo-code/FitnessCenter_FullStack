@@ -9,6 +9,8 @@ import {useDispatch, useSelector} from "react-redux";
 import config from "../../../config";
 import inMemoryJWT from "../../../services/inMemoryJWT";
 import {Resource} from "../../../context/AuthContext";
+import ShowErrorMessage from "../../../utils/showErrorMessage";
+import ShowSuccessMessage from "../../../utils/showSuccessMessage";
 
 
 
@@ -22,7 +24,7 @@ export default function MainProfile() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showAbonnementsList, setShowAbonnementsList] = useState(true);
-    const [abonnements, setAbonnements] = useState([]);
+    const [orders, setOrders] = useState([]);
 
     let user = useSelector((state) => state.userSliceMode.user);
 
@@ -38,21 +40,14 @@ export default function MainProfile() {
 
             Resource.get('/ordersByUser')
                 .then(response => {
-                    setAbonnements(response.data.map(item => item.Abonement))
+                    console.log('get.ordersByUser response.data: '+JSON.stringify(response.data, null, 2))
+                    setOrders(response.data)
                 })
                 .catch(error => {
-                    console.error('Failed to fetch abonnements:', error);
+                    console.error('Failed to fetch orders:', error);
                 });
         }
     }, [user]); // Выполнится только при изменении `user`
-
-    useEffect(() => {
-        if (abonnements.length === 0) {
-            setShowAbonnementsList(false);
-        } else {
-            setShowAbonnementsList(true);
-        }
-    }, [abonnements]);
 
     const handleLastNameChange = (event) => {
         setLastName(event.target.value);
@@ -84,6 +79,7 @@ export default function MainProfile() {
             const response = await Resource.put('/clients', datae);
 
             if (response.status === 200) {
+                ShowSuccessMessage('Client updated successfully')
                 dispatch(setUser(response.data));
                 setLastName(response.data.LastName);
                 setFirstName(response.data.FirstName);
@@ -91,6 +87,7 @@ export default function MainProfile() {
                 setPassword(response.data.Password);
             }
         } catch (error) {
+            ShowErrorMessage(error);
             console.error('response.status: ' + JSON.stringify(error.response.data.message, null, 2))
         }
     }
@@ -121,15 +118,15 @@ export default function MainProfile() {
                     </div>
                     <TextField style={{marginBottom: '20px'}}
                                fullWidth
-                               label="Last Name"
-                               value={lastName}
-                               onChange={handleLastNameChange}
-                    />
-                    <TextField style={{marginBottom: '20px'}}
-                               fullWidth
                                label="First Name"
                                value={firstName}
                                onChange={handleFirstNameChange}
+                    />
+                    <TextField style={{marginBottom: '20px'}}
+                               fullWidth
+                               label="Last Name"
+                               value={lastName}
+                               onChange={handleLastNameChange}
                     />
                     <TextField style={{marginBottom: '20px'}}
                                fullWidth
@@ -139,6 +136,7 @@ export default function MainProfile() {
                     />
                     <TextField style={{marginBottom: '20px'}}
                                fullWidth
+                               disabled={true}
                                label="Email"
                                value={email}
                                onChange={handleEmailChange}
@@ -165,9 +163,9 @@ export default function MainProfile() {
                     }}>Purchased Abonnements
                     </div>
                     <div style={{height: '550px', overflowY: 'scroll'}}>
-                        {setShowAbonnementsList ? <div>
-                            {abonnements.map(abonnement => (
-                                <AbonnementCard abonnement={abonnement}/>
+                        {orders ? <div>
+                            {orders.map(order => (
+                                <AbonnementCard abonnement={order.Abonement} status={order.Status}/>
                             ))}
                         </div> : <div>There are no orders</div>}
                     </div>

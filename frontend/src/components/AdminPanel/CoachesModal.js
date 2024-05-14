@@ -20,6 +20,7 @@ import {Checkbox} from "@mui/joy";
 import Button from "@mui/material/Button";
 import CoachCard from "../Main/MainCoaches/CoachesCard/coachCard";
 import ShowErrorMessage from "../../utils/showErrorMessage";
+import ShowSuccessMessage from "../../utils/showSuccessMessage";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -131,10 +132,18 @@ export default function CoachesModal({onClose}) {
 
                 if (response.status === 200) {
                     setCoaches(coaches.filter(item => item.Id !== response.data.Id))
+
+                    setName('');
+                    setDescription('');
+                    setCurrentServices([]);
+                    setCurrentCoach('');
+
+                    ShowSuccessMessage("Coach deleted successfully")
                 }
 
             }
         } catch (error) {
+            ShowErrorMessage(error)
             console.error('response.status: ' + JSON.stringify(error.response.data.message, null, 2))
         }
     }
@@ -155,7 +164,9 @@ export default function CoachesModal({onClose}) {
 
                 if (response.status === 200) {
                     setName(response.data.Name);
-                    setDescription(response.data.Validity);
+                    setDescription(response.data.Description);
+                    setCurrentServices(response.data.CoachService.map(as => as.Service));
+                    setCurrentCoach(response.data);
 
                     const newArray = coaches.map(coach => {
                         if (coach.Id === response.data.Id) {
@@ -165,6 +176,7 @@ export default function CoachesModal({onClose}) {
                     });
 
                     setCoaches(newArray);
+                    ShowSuccessMessage("Coach updated successfully")
                 }
             } else {
                 const response = await Resource.post('/coaches', data);
@@ -172,10 +184,12 @@ export default function CoachesModal({onClose}) {
                 if (response.status === 200) {
 
                     setName(response.data.Name);
-                    setDescription(response.data.Validity);
-
+                    setDescription(response.data.Description);
                     setCoaches([response.data, ...coaches]);
+                    setCurrentServices(response.data.CoachService.map(as => as.Service));
                     setCurrentCoach(response.data);
+
+                    ShowSuccessMessage("Coach created successfully")
                 }
             }
 
@@ -228,7 +242,7 @@ export default function CoachesModal({onClose}) {
                                             onClick={() => handleAbonementSelection(abonnement)}
                                         />*/}
 
-                                        <CoachCard key={coach.Id} coach={coach} width={'350px'} height={'100px'} imageSize={'100px'} button={false} onClick={() => handleCoachSelection(coach)}/>
+                                        <CoachCard key={coach.Id} coach={coach} width={'370px'} height={'310px'} imageSize={'100px'} button={false} onClick={() => handleCoachSelection(coach)}/>
                                     </div>
                                 </div>
                             ))}

@@ -11,6 +11,9 @@ import mainCss from "../../../MainNavHome/MainNavHome.module.css";
 import AbonnementCard from "../../MainAbonements/AbonementsCard/abonementCard";
 import {Modal, TextareaAutosize } from "@mui/material";
 import {Resource} from "../../../../context/AuthContext";
+import showErrorMessage from "../../../../utils/showErrorMessage";
+import ShowErrorMessage from "../../../../utils/showErrorMessage";
+import ShowSuccessMessage from "../../../../utils/showSuccessMessage";
 
 
 
@@ -21,6 +24,14 @@ export default function CoachDetailsCard(props) {
 
     const [openModal, setOpenModal] = useState(false);
     const [reviewText, setReviewText] = useState("");
+    const [coachComments, setCoachComments] = useState([]);
+
+    useEffect(() => {
+
+        if(coach.Comment){
+            setCoachComments(coach.Comment.sort((a, b) => new Date(b.CreateDate) - new Date(a.CreateDate)))
+        }
+    }, []);
 
     const handleOpenModal = () => {
         setOpenModal(true);
@@ -41,12 +52,18 @@ export default function CoachDetailsCard(props) {
 
             const response = await Resource.post('/comments', data);
 
+            if(response.status === 200){
+                console.log('postComments: '+ JSON.stringify(response, null, 2))
 
+                setCoachComments(coachComments => [...coachComments, response.data].sort((a, b) => new Date(b.CreateDate) - new Date(a.CreateDate)))
+                ShowSuccessMessage('Comment added successfully')
+                setReviewText('');
+                handleCloseModal();
+            }
         } catch (e) {
+            ShowErrorMessage(e);
             console.error('response.status: ' + JSON.stringify(e.response.data.message, null, 2))
         }
-
-        handleCloseModal();
     };
 
     const handleRevieChange = async (e) => {
@@ -149,11 +166,28 @@ export default function CoachDetailsCard(props) {
                     {coach.Name}
                 </div>
 
-                <div style={{marginTop: '5px', fontSize: '18px'}}>
+                <div style={{marginTop: '5px', fontSize: '18px', marginBottom:"20px"}}>
                     {coach.Description}
                 </div>
 
-                <div style={{display: 'flex', justifyContent: 'end', width: '100%'}}>
+                <div style={{display: 'flex', justifyContent: 'space-between', width: '100%', marginBottom:"20px"}}>
+
+                    <div>
+                        <div style={{paddingBottom: '15px', fontSize: '18px'}}>Services:</div>
+                        <div style={{display: 'flex',}}>
+                            {coach.CoachService.map(Service => (
+                                <div style={{marginRight: '10px'}}>
+                                    <div style={{width: '80px', height: '60px'}}>
+                                        <img style={{width: '100%', height: 'auto'}}
+                                             src={sad_doing_abonnements_card}/>
+                                    </div>
+                                    <div>{Service.Service.Title}</div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+
                     <Button
                         style={{
                             marginTop: '20px',
@@ -175,15 +209,18 @@ export default function CoachDetailsCard(props) {
                     Comments:
                 </div>
 
-                <div style={{display: 'flex', justifyContent: 'center', marginTop: '5px'}}>
-                    {coach.Comment.length > 0 ? <div style={{marginTop: '40px', overflowY: 'scroll'}}>
-                        {coach.Comment.map(comment => (
+                <div style={{display: 'flex', justifyContent: 'center', marginTop: '5px', width: '100%'}}>
+                    {coachComments.length > 0 ? <div style={{marginTop: '40px'}}>
+                        {coachComments.map(comment => (
                             /*<AbonnementCard abonnement={abonnement} width={'600px'} height={'400px'}
                                             buyButton={{buttonState: true}}/>*/
 
 
-                            <div style={{display: 'flex', marginBottom: '50px', height: '40px'}}>
-                                <div>
+                            <div style={{
+                                display: 'flex',
+                                marginBottom: '50px',
+                                background: 'rgba(160, 147, 197, 1)', padding:'10px', borderRadius: '10px', width:'100%'}}>
+                                <div style={{marginRight: '10px'}}>
                                     <div style={{width: '100px'}}>
                                         {/*{abonnement.Photo}*/}
                                         <img style={{width: '100%', height: 'auto'}} src={sad_doing_abonnements_card}/>

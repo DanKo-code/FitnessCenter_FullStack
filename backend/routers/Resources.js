@@ -15,7 +15,7 @@ router.get  ("/coaches", TokenService.checkAccess, ResourcesController.coaches);
 router.post  ("/comments", TokenService.checkAccess, ResourcesValidator.postComments, ResourcesController.createComment);
 router.get  ("/services", TokenService.checkAccess, ResourcesController.services);
 router.put  ("/abonnements", TokenService.checkAccess, ResourcesValidator.putAbonement, ResourcesController.updateAbonement);
-router.post  ("/abonnements", TokenService.checkAccess, ResourcesController.createAbonement);
+router.post  ("/abonnements", TokenService.checkAccess, ResourcesValidator.postAbonement, ResourcesController.createAbonement);
 router.delete  ("/abonnements/:abonementId", TokenService.checkAccess, ResourcesValidator.deleteAbonement, ResourcesController.deleteAbonement);
 router.put  ("/coaches", TokenService.checkAccess, ResourcesValidator.putCoaches, ResourcesController.updateCoach);
 router.post  ("/coaches", TokenService.checkAccess, ResourcesValidator.postCoaches, ResourcesController.createCoach);

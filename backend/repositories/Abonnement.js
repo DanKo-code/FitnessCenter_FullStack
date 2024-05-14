@@ -159,11 +159,15 @@ class AbonnementRepository {
 
     static async deleteAbonement(abonementId) {
 
+        console.log('deleteAbonement.abonementId: '+JSON.stringify(abonementId, null, 2))
+
         const deletedAbonement = await prismaClient.abonement.delete({
             where: {
-                Id: abonementId
+                Id: abonementId.toUpperCase()
             }
         })
+
+        console.log('deleteAbonement: '+JSON.stringify(deletedAbonement, null, 2))
 
         return deletedAbonement;
     }

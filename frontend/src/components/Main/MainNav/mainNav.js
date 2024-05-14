@@ -103,13 +103,13 @@ export default function MainNav() {
                             Edit Profile
                         </Button>
 
-                        <Button style={{color: 'white', background: 'rgba(117,100,163,255)', marginTop: '5%'}}
+                        <Button style={{color: 'white', background: 'rgba(117,100,163,255)', height: '62px', marginTop: '5%'}}
                                 onClick={()=>{navigate('/adminPanel')}}>
 
                             Admin panel
                         </Button>
 
-                        <Button style={{color: 'white', background: 'rgba(117,100,163,255)', marginTop: '50%'}}
+                        <Button style={{color: 'white', background: 'rgba(117,100,163,255)', marginTop: '30%'}}
                                 startIcon={< ExitToAppIcon sx={{width: 50, height: 50, transform: 'scaleX(-1)'}}/>}
                                 sx={{
                                     justifyContent: 'flex-start', // Выравнивание контента по левому краю

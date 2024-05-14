@@ -12,7 +12,16 @@ class CommentRepository {
             }
         });
 
-        return comment
+        const commentToReturn = await prismaClient.comment.findUnique({
+            where:{
+                Id: commentId
+            },
+            include:{
+                Client: true
+            }
+        })
+
+        return commentToReturn
     }
 }
 

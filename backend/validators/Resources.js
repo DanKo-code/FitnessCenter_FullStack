@@ -7,20 +7,21 @@ export const putClientsSchema = Yup.object({
             .string()
             .required('FirstName is required')
             .min(2, 'FirstName must be at least 2 characters')
-            .max(40, 'FirstName must be at most 40 characters')
+            .max(10, 'FirstName must be at most 10 characters')
             .matches(/^[A-Za-zА-Яа-яЁё\s]*$/, 'Please enter valid FirstName. ' +
                 'Only english and russian upper and lower case symbols are allowed'),
         lastName: Yup
             .string()
             .required('LastName is required')
             .min(2, 'LastName must be at least 2 characters')
-            .max(40, 'LastName must be at most 40 characters')
+            .max(20, 'LastName must be at most 20 characters')
             .matches(/^[A-Za-zА-Яа-яЁё\s]*$/, 'Please enter valid LastName. ' +
                 'Only english and russian upper and lower case symbols are allowed'),
         password: Yup
             .string()
             .required('Password is required')
-            .min(3, 'Password must be at least 3 characters'),
+            .min(3, 'Password must be at least 3 characters')
+            .max(10, 'Password must be at most 10 characters',)
     }),
 });
 
@@ -42,7 +43,7 @@ export const postCommentsSchema = Yup.object({
         reviewText: Yup
             .string()
             .required('reviewText is required')
-            .min(5, 'reviewText must be at least 10 characters')
+            .min(10, 'reviewText must be at least 10 characters')
             .max(200, 'reviewText must be at most 200 characters')
     })
 });
@@ -73,7 +74,7 @@ export const putAbonementSchema = Yup.object({
             .min(1)
             .max(10000),
         services: Yup.array().of(Yup.string().uuid()).required('At least 1 service is required')
-            .min(1, 'At least one UUID is required')
+            .min(1, 'At least 1 service is required')
     })
 });
 
@@ -99,7 +100,7 @@ export const postAbonementSchema = Yup.object({
             .min(1)
             .max(10000),
         services: Yup.array().of(Yup.string().uuid()).required('At least 1 service is required')
-            .min(1, 'At least one UUID is required')
+            .min(1, 'At least 1 service is required')
     })
 });
 
@@ -131,7 +132,7 @@ export const putCoachesSchema = Yup.object({
             .min(5, 'description must be at least 10 characters')
             .max(500, 'description must be at most 200 characters'),
         services: Yup.array().of(Yup.string().uuid()).required('At least 1 service is required')
-            .min(1, 'At least one UUID is required')
+            .min(1, 'At least 1 service is required')
     })
 });
 
@@ -147,10 +148,10 @@ export const postCoachesSchema = Yup.object({
         description: Yup
             .string()
             .required('description is required')
-            .min(5, 'description must be at least 10 characters')
+            .min(10, 'description must be at least 10 characters')
             .max(200, 'description must be at most 200 characters'),
         services: Yup.array().of(Yup.string().uuid()).required('At least 1 service is required')
-            .min(1, 'At least one UUID is required')
+            .min(1, 'At least 1 service is required')
     })
 });
 

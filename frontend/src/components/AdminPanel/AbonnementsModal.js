@@ -9,6 +9,8 @@ import Button from "@mui/material/Button";
 import React, {useEffect, useState} from "react";
 import {Resource} from "../../context/AuthContext";
 import showErrorMessage from "../../utils/showErrorMessage";
+import ShowSuccessMessage from "../../utils/showSuccessMessage";
+import ShowErrorMessage from "../../utils/showErrorMessage";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -137,11 +139,21 @@ export default function AbonnementsModal({onClose}) {
 
                 if (response.status === 200) {
                     setAbonnements(abonnements.filter(item => item.Id !== response.data.Id))
+
+                    setTitle('');
+                    setValidityPeriod('');
+                    setVisitingTime('');
+                    setPrice('');
+                    setCurrentServices([]);
+                    setCurrentAbonnement('');
+
+                    ShowSuccessMessage("Abonement deleted successfully")
                 }
 
             }
         } catch (error) {
-            console.error('response.status: ' + JSON.stringify(error.response.data.message, null, 2))
+            ShowErrorMessage(error)
+            //console.error('error.response: ' + JSON.stringify(error.response, null, 2))
         }
     }
     const handleSubmit = async (event) => {
@@ -167,6 +179,7 @@ export default function AbonnementsModal({onClose}) {
                     setVisitingTime(response.data.VisitingTime);
                     setPrice(response.data.Price);
                     setCurrentServices(response.data.AbonementService.map(as => as.Service));
+                    setCurrentAbonnement(response.data);
 
                     const newArray = abonnements.map(abonement => {
                         if (abonement.Id === response.data.Id) {
@@ -176,6 +189,7 @@ export default function AbonnementsModal({onClose}) {
                     });
 
                     setAbonnements(newArray);
+                    ShowSuccessMessage("Abonement updated successfully")
                 }
             } else {
                 const response = await Resource.post('/abonnements', data);
@@ -190,10 +204,12 @@ export default function AbonnementsModal({onClose}) {
 
                     setAbonnements([response.data, ...abonnements]);
                     setCurrentAbonnement(response.data);
+                    ShowSuccessMessage("Abonement created successfully")
                 }
             }
 
         } catch (error) {
+            ShowErrorMessage(error)
             console.error('response.status: ' + JSON.stringify(error.response.data.message, null, 2))
         }
     }

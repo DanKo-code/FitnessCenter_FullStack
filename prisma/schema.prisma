@@ -61,12 +61,13 @@ model CoachService {
 }
 
 model Comment {
-  Id          String @id(map: "PK_Comments") @db.UniqueIdentifier
-  CommentBody String @db.NVarChar(Max)
-  ClientsId   String @db.UniqueIdentifier
-  CouchesId   String @db.UniqueIdentifier
-  Client      Client @relation(fields: [ClientsId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Comments_Clients_ClientsId")
-  Coach       Coach  @relation(fields: [CouchesId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Comments_Couches_CouchesId")
+  Id          String   @id(map: "PK_Comments") @db.UniqueIdentifier
+  CommentBody String   @db.NVarChar(Max)
+  CreateDate  DateTime @default(now()) @db.DateTime
+  ClientsId   String   @db.UniqueIdentifier
+  CouchesId   String   @db.UniqueIdentifier
+  Client      Client   @relation(fields: [ClientsId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Comments_Clients_ClientsId")
+  Coach       Coach    @relation(fields: [CouchesId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Comments_Couches_CouchesId")
 
   @@index([ClientsId], map: "IX_Comments_ClientsId")
   @@index([CouchesId], map: "IX_Comments_CouchesId")

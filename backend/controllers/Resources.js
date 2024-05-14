@@ -99,7 +99,6 @@ class ResourcesController {
         try{
             const coaches = await CoachRepository.getAllCoaches();
 
-            console.log('coaches: '+JSON.stringify(coaches, null, 2))
             res.status(200).json(coaches)
         }catch (e){
             res.status(400).json({message: 'Сoaches can\'t be taken'})

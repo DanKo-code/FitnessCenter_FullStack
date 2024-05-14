@@ -17,7 +17,6 @@ import inMemoryJWT from "../../../services/inMemoryJWT";
 import {Resource} from "../../../context/AuthContext";
 
 
-
 export default function MainAbonnements() {
 
     const [age, setAge] = useState('');
@@ -25,6 +24,8 @@ export default function MainAbonnements() {
     const [abonnements, setAbonnements] = useState([]);
     const [searchedAbonnements, setSearchedAbonnements] = useState([]);
     const [showAbonnementsList, setShowAbonnementsList] = useState(true);
+    const [maxAbonementPrice, setMaxAbonementPrice] = useState(0);
+    const [minAbonementPrice, setMinAbonementPrice] = useState(0);
 
 
     useEffect(() => {
@@ -32,6 +33,20 @@ export default function MainAbonnements() {
         Resource.get('/abonnements')
             .then(response => {
                 setAbonnements(response.data);
+                console.log('response.data: ' + JSON.stringify(response.data, null, 2))
+
+                if (response.data.length > 0) {
+
+                    const sortPrices = response.data.map(abonement => abonement.Price).sort((a, b) => a - b);
+
+                    console.log('sortPrices: '+JSON.stringify(sortPrices, null, 2));
+
+                    setMaxAbonementPrice(sortPrices[sortPrices.length -1]+100)
+                    setMinAbonementPrice(sortPrices[0])
+
+                    setPriceRange([0,sortPrices[sortPrices.length -1]+100])
+                }
+
                 setSearchedAbonnements(response.data);
             })
             .catch(error => {
@@ -44,10 +59,9 @@ export default function MainAbonnements() {
 
         setTitleSearch(event.target.value);
 
-        if(!event.target.value){
-            setSearchedAbonnements(abonnements);
-        }
-        else{
+        if (!event.target.value) {
+            setSearchedAbonnements(abonnements.filter(abonnement => abonnement.Price >= priceRange[0] && abonnement.Price <= priceRange[1]));
+        } else {
             setSearchedAbonnements(abonnements.filter(abonnement => abonnement.Title.toLowerCase().includes(event.target.value.toLowerCase())));
         }
     };
@@ -60,13 +74,14 @@ export default function MainAbonnements() {
         }
     }, [searchedAbonnements]);
 
-    const [priceRange, setPriceRange] = useState([20, 80]);
+    const [priceRange, setPriceRange] = useState([0, 0]);
 
     const handlePriceRangeChange = (event, newValue) => {
         setPriceRange(newValue);
 
         setSearchedAbonnements(abonnements.filter(abonnement => abonnement.Price >= priceRange[0] && abonnement.Price <= priceRange[1]));
     };
+
 
     return (
         <div style={{
@@ -92,7 +107,7 @@ export default function MainAbonnements() {
                             onChange={handlePriceRangeChange}
                             valueLabelDisplay="auto"
                             min={0}
-                            max={400}
+                            max={maxAbonementPrice}
                         />
                     </div>
 
@@ -110,9 +125,18 @@ export default function MainAbonnements() {
                 <div style={{display: 'flex', justifyContent: 'center'}}>
                     {showAbonnementsList ? <div style={{marginTop: '40px', height: '400px', overflowY: 'scroll'}}>
                         {searchedAbonnements.map(abonnement => (
-                            <AbonnementCard abonnement={abonnement} width={'600px'} height={'400px'} buyButton={{buttonState:true}}/>
+                            <AbonnementCard abonnement={abonnement} width={'600px'} height={'400px'}
+                                            buyButton={{buttonState: true}}/>
                         ))}
-                    </div> : <div>There are no such abonnements</div>
+                    </div> : <div style={{
+                        marginTop: '40px',
+                        width: "600px",
+                        height: "400px",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        fontSize: "20px"
+                    }}>There are no such abonnements</div>
                     }
                 </div>
             </div>
